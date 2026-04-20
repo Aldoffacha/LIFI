@@ -1,0 +1,3 @@
+# Ajusta al puerto donde está el Arduino Emisor
+SERIAL_PORT = 'COM5'        # Windows: COM3, COM4...
+# SERIAL_PORT = '/dev/ttyUSB0'  # Linux/Mac

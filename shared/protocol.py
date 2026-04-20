@@ -1,0 +1,3 @@
+BAUDRATE = 9600
+ENCODING = 'ascii'
+TIMEOUT  = 1
