@@ -1,7 +1,5 @@
 # LiFi Chat Web System
 
-Sistema de chat via LiFi con interfaz web tipo Gmail.
-No necesitas tocar terminales una vez que el servidor está corriendo.
 
 ## Estructura
 
