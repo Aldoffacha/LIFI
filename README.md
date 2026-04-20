@@ -47,7 +47,7 @@ Luego abre en el navegador: http://localhost:5001
 2. Haz clic en el ícono de actualizar (🔄) para detectar puertos COM
 3. Selecciona el puerto del Arduino en el desplegable
 4. Clic en **Conectar**
-5. ¡Listo! Escribe y envía mensajes desde el chat
+5. Escribe y envía mensajes desde el chat
 
 ## Notas importantes
 
