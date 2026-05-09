@@ -5,7 +5,7 @@ import serial
 import serial.tools.list_ports
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
-import sys, os, json, datetime
+import sys, os, json, datetime, time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from shared.protocol import BAUDRATE, ENCODING, TIMEOUT
@@ -14,12 +14,15 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = 'lifi-receiver-secret'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
+BUFFER_TIMEOUT = 1.5  # segundos sin nuevos chars → guardar mensaje automáticamente
+
 state = {
     'port': None,
     'serial': None,
     'connected': False,
     'history': [],
-    'char_buffer': ''
+    'char_buffer': '',
+    'last_char_time': 0,  # timestamp del último char recibido
 }
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
@@ -52,7 +55,7 @@ def parse_arduino_line(line):
                 return '\n'
             if char and char != '(carácter no imprimible)':
                 return char
-            # Si char está vacío pero el bits indican ASCII 10 → salto de línea
+            # Si char está vacío pero los bits indican ASCII 10 → salto de línea
             if not char:
                 bits_part = partes[0].replace('Bits:', '').strip()
                 if bits_part == '00001010':
@@ -64,6 +67,7 @@ def save_and_emit_message():
     """Guarda el buffer actual como mensaje en el historial y lo emite."""
     msg_text = state['char_buffer'].strip()
     state['char_buffer'] = ''
+    state['last_char_time'] = 0  # resetear timestamp
     if not msg_text:
         return
     entry = {
@@ -83,8 +87,23 @@ def read_serial_loop():
     while True:
         try:
             if state['serial'] and state['connected']:
+
+                # ── Timeout automático del buffer ──────────────────────────────
+                # Si hay chars acumulados y no llega nada nuevo en BUFFER_TIMEOUT
+                # segundos, guardar el mensaje tal como está.
+                if (state['char_buffer'] and
+                        state['last_char_time'] > 0 and
+                        time.time() - state['last_char_time'] > BUFFER_TIMEOUT):
+                    save_and_emit_message()
+
+                # ── Lectura del puerto ─────────────────────────────────────────
                 if state['serial'].in_waiting > 0:
-                    raw = state['serial'].readline().decode(ENCODING, errors='ignore').strip()
+                    # read_until es más reactivo que readline() cuando el Arduino
+                    # no siempre termina con '\n'
+                    raw = state['serial'].read_until(b'\n', size=256).decode(
+                        ENCODING, errors='ignore'
+                    ).strip()
+
                     if not raw:
                         eventlet.sleep(0.02)
                         continue
@@ -97,10 +116,11 @@ def read_serial_loop():
 
                     if char is not None:
                         if char == '\n':
-                            # Fin de mensaje — guardar lo acumulado
+                            # Fin de mensaje explícito — guardar lo acumulado
                             save_and_emit_message()
                         else:
                             state['char_buffer'] += char
+                            state['last_char_time'] = time.time()  # actualizar timestamp
                             # Emitir progreso del buffer al frontend
                             socketio.emit('char_received', {
                                 'char': char,
@@ -112,6 +132,7 @@ def read_serial_loop():
                         socketio.emit('system_msg', {'msg': raw})
 
             eventlet.sleep(0.02)
+
         except Exception as e:
             socketio.emit('arduino_log', {'msg': f'[Error]: {str(e)}'})
             eventlet.sleep(1)
@@ -136,10 +157,12 @@ def connect_port():
     try:
         if state['serial'] and state['serial'].is_open:
             state['serial'].close()
-        state['serial'] = serial.Serial(port, BAUDRATE, timeout=TIMEOUT)
+        # timeout=0.1 → no bloquea el loop de eventlet esperando '\n'
+        state['serial'] = serial.Serial(port, BAUDRATE, timeout=0.1)
         state['port'] = port
         state['connected'] = True
-        state['char_buffer'] = ''  # Limpiar buffer al reconectar
+        state['char_buffer'] = ''       # limpiar buffer al reconectar
+        state['last_char_time'] = 0
         socketio.emit('status_change', {'connected': True, 'port': port})
         eventlet.spawn(read_serial_loop)
         return jsonify({'ok': True, 'port': port})
