@@ -117,5 +117,68 @@
     "direction": "sent",
     "timestamp": "09:44:24",
     "date": "2026-05-09"
+  },
+  {
+    "id": 18,
+    "text": "hol",
+    "direction": "sent",
+    "timestamp": "09:46:03",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 19,
+    "text": "hola",
+    "direction": "sent",
+    "timestamp": "09:52:55",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 20,
+    "text": "hooo",
+    "direction": "sent",
+    "timestamp": "09:55:15",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 21,
+    "text": "aranibar",
+    "direction": "sent",
+    "timestamp": "09:57:10",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 22,
+    "text": "hola bro",
+    "direction": "sent",
+    "timestamp": "09:58:09",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 23,
+    "text": "hola",
+    "direction": "sent",
+    "timestamp": "10:05:03",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 24,
+    "text": "bro",
+    "direction": "sent",
+    "timestamp": "10:05:38",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 25,
+    "text": "hola carla, como estas?",
+    "direction": "sent",
+    "timestamp": "10:06:26",
+    "date": "2026-05-09"
+  },
+  {
+    "id": 26,
+    "text": ":(",
+    "direction": "sent",
+    "timestamp": "10:10:44",
+    "date": "2026-05-09"
   }
 ]

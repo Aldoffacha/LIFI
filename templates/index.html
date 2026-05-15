@@ -7,30 +7,42 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:       #f6f8fc;
-    --surface:  #ffffff;
-    --sidebar:  #ffffff;
-    --accent:   #1a73e8;
-    --accent2:  #0d5dbe;
-    --sent-bg:  #d2e3fc;
-    --sent-txt: #1a237e;
-    --recv-bg:  #f1f3f4;
-    --recv-txt: #202124;
-    --text:     #202124;
-    --muted:    #5f6368;
-    --border:   #e0e0e0;
-    --danger:   #d93025;
-    --success:  #1e8e3e;
-    --warn:     #f9ab00;
-    --radius:   12px;
-    --font:     'DM Sans', sans-serif;
-    --mono:     'DM Mono', monospace;
-    --sidebar-w: 260px;
-    --header-h:  64px;
+    --bg:         #f6f8fc;
+    --surface:    #ffffff;
+    --sidebar:    #ffffff;
+    --accent:     #1a73e8;
+    --accent2:    #0d5dbe;
+    --accent-bg:  #d2e3fc;
+    --sent-bg:    #d2e3fc;
+    --sent-txt:   #1a237e;
+    --recv-bg:    #f1f3f4;
+    --recv-txt:   #202124;
+    --text:       #202124;
+    --muted:      #5f6368;
+    --border:     #e0e0e0;
+    --danger:     #d93025;
+    --danger-bg:  #fce8e6;
+    --success:    #1e8e3e;
+    --success-bg: #e6f4ea;
+    --warn:       #f9ab00;
+    --warn-bg:    #fff8e1;
+    --tooltip-bg: #323232;
+    --scrollbar:  #dadce0;
+    --log-bg:     #1e1e2e;
+    --log-text:   #cdd6f4;
+    --log-line:   #a6e3a1;
+    --log-warn:   #f9e2af;
+    --log-err:    #f38ba8;
+    --log-sys:    #89b4fa;
+    --radius:     12px;
+    --font:       'DM Sans', sans-serif;
+    --mono:       'DM Mono', monospace;
+    --sidebar-w:  240px;
+    --header-h:   60px;
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 
   body {
     font-family: var(--font);
@@ -54,132 +66,29 @@
   }
 
   .sidebar-logo {
-    padding: 18px 20px 12px;
+    padding: 18px 20px 14px;
     display: flex;
     align-items: center;
     gap: 10px;
+    border-bottom: 1px solid var(--border);
   }
 
   .logo-icon {
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     background: var(--accent);
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-
-  .logo-icon svg { width: 20px; height: 20px; fill: white; }
-
-  .logo-text { font-size: 18px; font-weight: 600; letter-spacing: -0.5px; }
+  .logo-icon svg { width: 18px; height: 18px; fill: white; }
+  .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -0.5px; }
   .logo-text span { color: var(--accent); }
 
-  /* Badge de modo */
-  .mode-badge {
-    margin: 0 20px 16px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .mode-badge.sender   { background: #e8f0fe; color: #1a73e8; }
-  .mode-badge.receiver { background: #e6f4ea; color: #1e8e3e; }
-
-  /* Conexión panel */
-  .conn-panel {
-    margin: 0 12px;
-    padding: 14px;
-    background: var(--bg);
-    border-radius: var(--radius);
-    margin-bottom: 8px;
-  }
-
-  .conn-panel label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  .port-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  select {
-    flex: 1;
-    padding: 7px 10px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    font-family: var(--font);
-    font-size: 13px;
-    color: var(--text);
-    cursor: pointer;
-    outline: none;
-  }
-  select:focus { border-color: var(--accent); }
-
-  .btn-icon {
-    width: 32px; height: 32px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .btn-icon:hover { background: var(--bg); }
-  .btn-icon svg { width: 15px; height: 15px; stroke: var(--muted); fill: none; }
-
-  .btn-connect {
-    width: 100%;
-    margin-top: 8px;
-    padding: 8px;
-    border: none;
-    border-radius: 8px;
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-connect.connect    { background: var(--accent); color: white; }
-  .btn-connect.connect:hover { background: var(--accent2); }
-  .btn-connect.disconnect { background: #fce8e6; color: var(--danger); }
-  .btn-connect.disconnect:hover { background: #f5c6c3; }
-
-  /* Status indicator */
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .status-dot.online  { background: var(--success); box-shadow: 0 0 0 3px #c8e6c9; }
-  .status-dot.offline { background: #bdbdbd; }
-  .status-dot.pulse   { animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  .status-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 12px 4px;
-    font-size: 12px; color: var(--muted);
-  }
-
   /* Nav items */
-  .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
   .nav-section {
-    padding: 12px 20px 4px;
+    padding: 10px 20px 4px;
     font-size: 11px;
     font-weight: 600;
     color: var(--muted);
@@ -196,11 +105,10 @@
     font-size: 14px;
     color: var(--text);
     transition: background 0.15s;
-    -webkit-user-select: none;
-user-select: none;
+    user-select: none;
   }
   .nav-item:hover    { background: var(--bg); }
-  .nav-item.active   { background: #d2e3fc; font-weight: 600; color: var(--accent); }
+  .nav-item.active   { background: var(--accent-bg); font-weight: 600; color: var(--accent); }
   .nav-item svg { width: 18px; height: 18px; stroke: currentColor; fill: none; flex-shrink: 0; }
 
   .nav-badge {
@@ -215,6 +123,22 @@ user-select: none;
     text-align: center;
   }
 
+  /* Status row en sidebar */
+  .status-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px 14px;
+    font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .status-dot.online  { background: var(--success); box-shadow: 0 0 0 3px var(--success-bg); }
+  .status-dot.offline { background: #bdbdbd; }
+
   /* ── MAIN ── */
   .main {
     flex: 1;
@@ -224,38 +148,245 @@ user-select: none;
     min-width: 0;
   }
 
+  /* ── TOPBAR ── */
   .topbar {
     height: var(--header-h);
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    gap: 16px;
+    padding: 0 16px 0 20px;
+    gap: 10px;
     flex-shrink: 0;
   }
 
-  .topbar-title { font-size: 16px; font-weight: 600; flex: 1; }
-  .topbar-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .topbar-info { flex: 1; min-width: 0; }
+  .topbar-title { font-size: 15px; font-weight: 600; }
+  .topbar-sub   { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-  .topbar-actions { display: flex; gap: 8px; }
+  /* Topbar right group */
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
 
+  /* Botón Limpiar */
   .btn-sm {
-    padding: 7px 14px;
+    padding: 6px 12px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--surface);
     font-family: var(--font);
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 5px;
     transition: background 0.15s;
     color: var(--text);
+    white-space: nowrap;
   }
   .btn-sm:hover { background: var(--bg); }
-  .btn-sm svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
-  .btn-sm.danger { color: var(--danger); border-color: #f5c6c3; }
-  .btn-sm.danger:hover { background: #fce8e6; }
+  .btn-sm svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+  .btn-sm.danger { color: var(--danger); border-color: var(--danger-bg); }
+  .btn-sm.danger:hover { background: var(--danger-bg); }
+
+  /* Separador vertical */
+  .topbar-divider {
+    width: 1px; height: 22px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── PILL DE CONEXIÓN ── */
+  .conn-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 5px 6px 5px 10px;
+    font-size: 12px;
+    transition: border-color 0.2s;
+  }
+  .conn-pill:focus-within { border-color: var(--accent); }
+  .conn-pill-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #bdbdbd;
+    flex-shrink: 0;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .conn-pill-dot.online {
+    background: var(--success);
+    box-shadow: 0 0 0 2px var(--success-bg);
+  }
+  .conn-pill select {
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    max-width: 130px;
+  }
+  .conn-pill-refresh {
+    width: 26px; height: 26px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .conn-pill-refresh:hover { background: var(--bg); }
+  .conn-pill-refresh svg { width: 13px; height: 13px; stroke: var(--muted); fill: none; }
+  .btn-connect-pill {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 18px;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .btn-connect-pill.connect    { background: var(--accent); color: white; }
+  .btn-connect-pill.connect:hover { background: var(--accent2); }
+  .btn-connect-pill.disconnect { background: var(--danger-bg); color: var(--danger); }
+  .btn-connect-pill.disconnect:hover { background: var(--danger-bg); filter: brightness(0.9); }
+
+  /* ── BOTÓN TEMA (paleta) ── */
+  .topbar-icon-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .topbar-icon-btn:hover { background: var(--bg); }
+  .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--muted); fill: none; }
+
+  /* Dropdown genérico */
+  .topbar-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    z-index: 200;
+    display: none;
+    min-width: 200px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .topbar-dropdown.open { display: block; }
+  .dropdown-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  /* Swatches de tema */
+  .theme-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.12s, border-color 0.12s;
+    position: relative;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { border-color: var(--accent); }
+  .swatch[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg, #323232);
+    color: white;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* ── BOTÓN MODO (persona) ── */
+  .mode-icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .mode-icon-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
+  .mode-icon-btn svg { width: 16px; height: 16px; stroke: var(--muted); fill: none; }
+  .mode-icon-btn.sender svg { stroke: var(--accent); }
+  .mode-icon-btn.receiver svg { stroke: var(--success); }
+
+  .mode-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    z-index: 200;
+    display: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    min-width: 170px;
+  }
+  .mode-tooltip.open { display: block; }
+  .mode-tooltip-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .mode-tooltip-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .mode-tooltip-value .mode-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .mode-tooltip-value.sender .mode-dot  { background: var(--accent); }
+  .mode-tooltip-value.receiver .mode-dot { background: var(--success); }
+  .mode-tooltip-value.sender  { color: var(--accent); }
+  .mode-tooltip-value.receiver { color: var(--success); }
 
   /* ── CHAT VIEW ── */
   #view-chat { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
@@ -263,18 +394,19 @@ user-select: none;
   .messages-area {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     scroll-behavior: smooth;
+    transition: background 0.35s;
   }
 
   .msg-row {
     display: flex;
     flex-direction: column;
     max-width: 70%;
-    animation: msgIn 0.25s ease;
+    animation: msgIn 0.22s ease;
   }
   @keyframes msgIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
 
@@ -282,7 +414,7 @@ user-select: none;
   .msg-row.received { align-self: flex-start; align-items: flex-start; }
 
   .msg-bubble {
-    padding: 10px 16px;
+    padding: 10px 15px;
     border-radius: 18px;
     font-size: 14px;
     line-height: 1.5;
@@ -307,8 +439,8 @@ user-select: none;
     padding: 2px 7px;
     border-radius: 10px;
   }
-  .msg-label.sent     { background: #e8f0fe; color: var(--accent); }
-  .msg-label.received { background: #e6f4ea; color: var(--success); }
+  .msg-label.sent     { background: var(--accent-bg); color: var(--accent); }
+  .msg-label.received { background: var(--success-bg); color: var(--success); }
 
   /* Typing indicator */
   .typing-indicator {
@@ -335,11 +467,11 @@ user-select: none;
   /* Buffer bar */
   #buffer-bar {
     display: none;
-    background: #fff8e1;
-    border-top: 1px solid #ffe082;
+    background: var(--warn-bg);
+    border-top: 1px solid var(--warn);
     padding: 8px 24px;
     font-size: 12px;
-    color: #f57f17;
+    color: var(--warn);
     align-items: center;
     gap: 10px;
     font-family: var(--mono);
@@ -348,17 +480,17 @@ user-select: none;
   #buffer-bar button {
     margin-left: auto;
     padding: 4px 10px;
-    border: 1px solid #f57f17;
+    border: 1px solid var(--warn);
     background: none;
     border-radius: 6px;
-    color: #f57f17;
+    color: var(--warn);
     font-size: 11px;
     cursor: pointer;
   }
 
   /* Input area */
   .input-area {
-    padding: 16px 24px;
+    padding: 14px 20px;
     background: var(--surface);
     border-top: 1px solid var(--border);
     display: flex;
@@ -393,7 +525,7 @@ user-select: none;
   #msg-input::placeholder { color: var(--muted); }
 
   .btn-send {
-    width: 44px; height: 44px;
+    width: 42px; height: 42px;
     background: var(--accent);
     border: none;
     border-radius: 50%;
@@ -405,7 +537,7 @@ user-select: none;
   .btn-send:hover   { background: var(--accent2); }
   .btn-send:active  { transform: scale(0.94); }
   .btn-send:disabled { background: var(--border); cursor: not-allowed; }
-  .btn-send svg { width: 20px; height: 20px; fill: white; }
+  .btn-send svg { width: 19px; height: 19px; fill: white; }
 
   .receiver-note {
     text-align: center;
@@ -415,6 +547,19 @@ user-select: none;
     background: var(--bg);
     border-top: 1px solid var(--border);
   }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    gap: 12px;
+  }
+  .empty-state svg { width: 44px; height: 44px; stroke: var(--muted); fill: none; }
+  .empty-state p { font-size: 14px; }
 
   /* ── LOG VIEW ── */
   #view-log { display: none; flex-direction: column; flex: 1; overflow: hidden; }
@@ -426,14 +571,14 @@ user-select: none;
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1.8;
-    background: #1e1e2e;
-    color: #cdd6f4;
+    background: var(--log-bg, #1e1e2e);
+    color: var(--log-text, #cdd6f4);
   }
 
-  .log-line { color: #a6e3a1; }
-  .log-line.warn { color: #f9e2af; }
-  .log-line.err  { color: #f38ba8; }
-  .log-line.sys  { color: #89b4fa; }
+  .log-line { color: var(--log-line, #a6e3a1); }
+  .log-line.warn { color: var(--log-warn, #f9e2af); }
+  .log-line.err  { color: var(--log-err, #f38ba8); }
+  .log-line.sys  { color: var(--log-sys, #89b4fa); }
 
   /* ── HISTORY VIEW ── */
   #view-history { display: none; flex-direction: column; flex: 1; overflow: hidden; }
@@ -465,14 +610,14 @@ user-select: none;
   .history-item:hover { background: var(--bg); }
 
   .history-avatar {
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 600;
+    font-size: 12px; font-weight: 700;
     flex-shrink: 0;
   }
-  .history-avatar.sent     { background: #e8f0fe; color: var(--accent); }
-  .history-avatar.received { background: #e6f4ea; color: var(--success); }
+  .history-avatar.sent     { background: var(--accent-bg); color: var(--accent); }
+  .history-avatar.received { background: var(--success-bg); color: var(--success); }
 
   .history-body { flex: 1; min-width: 0; }
   .history-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
@@ -480,24 +625,11 @@ user-select: none;
   .history-time { font-size: 11px; color: var(--muted); }
   .history-text { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* Empty state */
-  .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    gap: 12px;
-  }
-  .empty-state svg { width: 48px; height: 48px; stroke: var(--border); fill: none; }
-  .empty-state p { font-size: 14px; }
-
   /* Toast */
   .toast {
     position: fixed;
     bottom: 24px; right: 24px;
-    background: #323232;
+    background: var(--tooltip-bg, #323232);
     color: white;
     padding: 12px 18px;
     border-radius: 10px;
@@ -515,7 +647,7 @@ user-select: none;
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar, #dadce0); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -527,33 +659,6 @@ user-select: none;
       <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
     <span class="logo-text">Li<span>Fi</span> Chat</span>
-  </div>
-
-  <div class="mode-badge {{ mode }}">
-    {% if mode == 'sender' %}📡 Modo Emisor{% else %}📥 Modo Receptor{% endif %}
-  </div>
-
-  <!-- Conexión -->
-  <div class="conn-panel">
-    <label for="port-select">Puerto Serial</label>
-    <div class="port-row">
-      <select id="port-select">
-        <option value="">-- Seleccionar --</option>
-      </select>
-      <button class="btn-icon" onclick="refreshPorts()" title="Actualizar puertos">
-        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      </button>
-    </div>
-    <button class="btn-connect connect" id="btn-connect" onclick="toggleConnect()">
-      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Conectar
-    </button>
-  </div>
-
-  <!-- Status -->
-  <div class="status-row">
-    <div class="status-dot offline" id="status-dot"></div>
-    <span id="status-text">Sin conexión</span>
   </div>
 
   <!-- Nav -->
@@ -576,36 +681,91 @@ user-select: none;
       Log Arduino
     </div>
   </nav>
+
+  <!-- Status -->
+  <div class="status-row">
+    <div class="status-dot offline" id="status-dot"></div>
+    <span id="status-text">Sin conexión</span>
+  </div>
 </aside>
 
 <!-- ══ MAIN ══ -->
 <main class="main">
 
-  <!-- Topbar -->
+  <!-- ── TOPBAR ── -->
   <div class="topbar">
-    <div>
+    <div class="topbar-info">
       <div class="topbar-title" id="topbar-title">Chat LiFi</div>
       <div class="topbar-sub" id="topbar-sub">Conecta un puerto para comenzar</div>
     </div>
-    <div class="topbar-actions">
+
+    <div class="topbar-right">
+
+      <!-- Botón limpiar -->
       <button class="btn-sm danger" onclick="clearHistory()">
         <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         Limpiar
       </button>
+
+      <div class="topbar-divider"></div>
+
+      <!-- Pill de conexión -->
+      <div class="conn-pill">
+        <div class="conn-pill-dot" id="conn-pill-dot"></div>
+        <select id="port-select" aria-label="Puerto serial">
+          <option value="">-- Puerto --</option>
+        </select>
+        <button class="conn-pill-refresh" onclick="refreshPorts()" title="Actualizar puertos">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+        <button class="btn-connect-pill connect" id="btn-connect" onclick="toggleConnect()">
+          Conectar
+        </button>
+      </div>
+
+      <div class="topbar-divider"></div>
+
+      <!-- Botón paleta de colores -->
+      <div style="position:relative;">
+        <button class="topbar-icon-btn" id="themeBtn" onclick="toggleThemeDropdown(event)" title="Paleta de colores" aria-label="Paleta de colores">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20c-1.1 0-2-.9-2-2v-1.5c0-.83.67-1.5 1.5-1.5H13c2.21 0 4-1.79 4-4 0-3.31-2.69-6-6-6S5 9.69 5 13c0 1.66.67 3.16 1.76 4.24"/><circle cx="8.5" cy="10.5" r="1"/><circle cx="12" cy="8" r="1"/><circle cx="15.5" cy="10.5" r="1"/></svg>
+        </button>
+        <div class="topbar-dropdown" id="themeDropdown">
+          <div class="dropdown-label">Paleta de colores</div>
+          <div class="theme-swatches" id="swatchContainer"></div>
+        </div>
+      </div>
+
+      <!-- Botón modo (persona) -->
+      <div style="position:relative;">
+        <button class="mode-icon-btn {{ mode }}" id="modeBtn" onclick="toggleModeTooltip(event)" aria-label="Ver modo actual">
+          <!-- Emisor: ícono de antena / Receptor: ícono de descarga -->
+          {% if mode == 'sender' %}
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg>
+          {% else %}
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+          {% endif %}
+        </button>
+        <div class="mode-tooltip" id="modeTooltip">
+          <div class="mode-tooltip-label">Modo activo</div>
+          <div class="mode-tooltip-value {{ mode }}">
+            <div class="mode-dot"></div>
+            {% if mode == 'sender' %}Emisor (TX){% else %}Receptor (RX){% endif %}
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <!-- ── VIEW: CHAT ── -->
   <div id="view-chat">
     <div class="messages-area" id="messages">
-
-      <!-- Empty state -->
       <div class="empty-state" id="empty-state">
         <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <p>No hay mensajes aún</p>
-        <p style="font-size:12px">{% if mode == 'sender' %}Escribe un mensaje y presiiona Enviar{% else %}Esperando mensajes del emisor via LiFi...{% endif %}</p>
+        <p style="font-size:12px">{% if mode == 'sender' %}Escribe un mensaje y presiona Enviar{% else %}Esperando mensajes del emisor via LiFi...{% endif %}</p>
       </div>
-
       <div class="typing-indicator" id="typing-indicator">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
@@ -666,7 +826,344 @@ const socket = io();
 let isConnected = false;
 let unreadCount = 0;
 
-// ── Socket events ──
+// ── Paletas de color globales ────────────────────────────────────────────────
+const PALETTES = [
+  {
+    label: 'Blanco', bg: '#ffffff',
+    colors: {
+      '--bg':         '#f0f2f5',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#1a73e8',
+      '--accent2':    '#0d5dbe',
+      '--accent-bg':  '#d2e3fc',
+      '--sent-bg':    '#d2e3fc',
+      '--sent-txt':   '#1a237e',
+      '--recv-bg':    '#f1f3f4',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#e0e0e0',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#dadce0',
+      '--log-bg':     '#1e1e2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Gris suave', bg: '#f6f8fc',
+    colors: {
+      '--bg':         '#f6f8fc',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#1a73e8',
+      '--accent2':    '#0d5dbe',
+      '--accent-bg':  '#d2e3fc',
+      '--sent-bg':    '#d2e3fc',
+      '--sent-txt':   '#1a237e',
+      '--recv-bg':    '#f1f3f4',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#e0e0e0',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#dadce0',
+      '--log-bg':     '#1e1e2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Azul cielo', bg: '#e8f1fb',
+    colors: {
+      '--bg':         '#e8f1fb',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#1a73e8',
+      '--accent2':    '#0d5dbe',
+      '--accent-bg':  '#c5d9f0',
+      '--sent-bg':    '#c5d9f0',
+      '--sent-txt':   '#0d47a1',
+      '--recv-bg':    '#f0f4f9',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#d0dce8',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#c0cbd8',
+      '--log-bg':     '#1a1a2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Verde menta', bg: '#e6f4ea',
+    colors: {
+      '--bg':         '#e6f4ea',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#2e7d32',
+      '--accent2':    '#1b5e20',
+      '--accent-bg':  '#c8e6c9',
+      '--sent-bg':    '#c8e6c9',
+      '--sent-txt':   '#1b5e20',
+      '--recv-bg':    '#f1f8e9',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#c8e6c9',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#2e7d32',
+      '--success-bg': '#c8e6c9',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#b8d8b8',
+      '--log-bg':     '#1a1a2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Lavanda', bg: '#ede9fe',
+    colors: {
+      '--bg':         '#ede9fe',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#7c3aed',
+      '--accent2':    '#6d28d9',
+      '--accent-bg':  '#ddd6fe',
+      '--sent-bg':    '#ddd6fe',
+      '--sent-txt':   '#4c1d95',
+      '--recv-bg':    '#f5f3ff',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#d8d0f0',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#c8c0e0',
+      '--log-bg':     '#1a1a2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Durazno', bg: '#fdecea',
+    colors: {
+      '--bg':         '#fdecea',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#d84315',
+      '--accent2':    '#bf360c',
+      '--accent-bg':  '#ffccbc',
+      '--sent-bg':    '#ffccbc',
+      '--sent-txt':   '#bf360c',
+      '--recv-bg':    '#fbe9e7',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#ffccbc',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#e0c0b8',
+      '--log-bg':     '#1a1a2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Arena', bg: '#faf6ed',
+    colors: {
+      '--bg':         '#faf6ed',
+      '--surface':    '#ffffff',
+      '--sidebar':    '#ffffff',
+      '--accent':     '#b8860b',
+      '--accent2':    '#8b6914',
+      '--accent-bg':  '#f0e6c8',
+      '--sent-bg':    '#f0e6c8',
+      '--sent-txt':   '#5d4037',
+      '--recv-bg':    '#f5f0e0',
+      '--recv-txt':   '#202124',
+      '--text':       '#202124',
+      '--muted':      '#5f6368',
+      '--border':     '#e0d5c0',
+      '--danger':     '#d93025',
+      '--danger-bg':  '#fce8e6',
+      '--success':    '#1e8e3e',
+      '--success-bg': '#e6f4ea',
+      '--warn':       '#f9ab00',
+      '--warn-bg':    '#fff8e1',
+      '--tooltip-bg': '#323232',
+      '--scrollbar':  '#d0c8b0',
+      '--log-bg':     '#1a1a2e',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Pizarra', bg: '#2c2c3a',
+    colors: {
+      '--bg':         '#2c2c3a',
+      '--surface':    '#363648',
+      '--sidebar':    '#363648',
+      '--accent':     '#7aa2f7',
+      '--accent2':    '#5d8fe8',
+      '--accent-bg':  '#3d4a6b',
+      '--sent-bg':    '#3d59a1',
+      '--sent-txt':   '#e8e8f0',
+      '--recv-bg':    '#3a3a4a',
+      '--recv-txt':   '#e8e8f0',
+      '--text':       '#e8e8f0',
+      '--muted':      '#9999aa',
+      '--border':     '#44445a',
+      '--danger':     '#f7768e',
+      '--danger-bg':  '#3d1a24',
+      '--success':    '#9ece6a',
+      '--success-bg': '#1e3a1e',
+      '--warn':       '#e0af68',
+      '--warn-bg':    '#3d3520',
+      '--tooltip-bg': '#1e1e2e',
+      '--scrollbar':  '#55556a',
+      '--log-bg':     '#1a1a2a',
+      '--log-text':   '#cdd6f4',
+      '--log-line':   '#a6e3a1',
+      '--log-warn':   '#f9e2af',
+      '--log-err':    '#f38ba8',
+      '--log-sys':    '#89b4fa',
+    }
+  },
+  {
+    label: 'Noche', bg: '#0d1117',
+    colors: {
+      '--bg':         '#0d1117',
+      '--surface':    '#161b22',
+      '--sidebar':    '#161b22',
+      '--accent':     '#58a6ff',
+      '--accent2':    '#1f6feb',
+      '--accent-bg':  '#1f3355',
+      '--sent-bg':    '#1f6feb',
+      '--sent-txt':   '#ffffff',
+      '--recv-bg':    '#21262d',
+      '--recv-txt':   '#c9d1d9',
+      '--text':       '#c9d1d9',
+      '--muted':      '#8b949e',
+      '--border':     '#30363d',
+      '--danger':     '#f85149',
+      '--danger-bg':  '#3d1214',
+      '--success':    '#3fb950',
+      '--success-bg': '#1a3a1e',
+      '--warn':       '#d29922',
+      '--warn-bg':    '#3d3520',
+      '--tooltip-bg': '#21262d',
+      '--scrollbar':  '#30363d',
+      '--log-bg':     '#0d1117',
+      '--log-text':   '#c9d1d9',
+      '--log-line':   '#7ee787',
+      '--log-warn':   '#d29922',
+      '--log-err':    '#ff7b72',
+      '--log-sys':    '#79c0ff',
+    }
+  },
+];
+
+let activeSwatchIndex = 1; // Gris suave por defecto
+
+function buildSwatches() {
+  const container = document.getElementById('swatchContainer');
+  PALETTES.forEach((p, i) => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (i === activeSwatchIndex ? ' active' : '');
+    s.style.background = p.bg;
+    s.style.outline = (p.label === 'Blanco') ? '1px solid var(--border)' : 'none';
+    s.title = p.label;
+    s.onclick = () => {
+      document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+      activeSwatchIndex = i;
+      applyPalette(p);
+    };
+    container.appendChild(s);
+  });
+}
+
+function applyPalette(p) {
+  const root = document.documentElement;
+  for (const [key, val] of Object.entries(p.colors)) {
+    root.style.setProperty(key, val);
+  }
+  localStorage.setItem('lifi-palette', p.label);
+}
+
+function toggleThemeDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('themeDropdown').classList.toggle('open');
+  document.getElementById('modeTooltip').classList.remove('open');
+}
+
+function toggleModeTooltip(e) {
+  e.stopPropagation();
+  document.getElementById('modeTooltip').classList.toggle('open');
+  document.getElementById('themeDropdown').classList.remove('open');
+}
+
+document.addEventListener('click', () => {
+  document.getElementById('themeDropdown').classList.remove('open');
+  document.getElementById('modeTooltip').classList.remove('open');
+});
+
+// ── Socket events ────────────────────────────────────────────────────────────
 socket.on('connect', () => addLog('WebSocket conectado', 'sys'));
 socket.on('disconnect', () => addLog('WebSocket desconectado', 'err'));
 
@@ -694,7 +1191,6 @@ socket.on('new_message', (entry) => {
 });
 
 socket.on('arduino_log', ({ msg }) => addLog(msg));
-
 socket.on('system_msg', ({ msg }) => addLog(msg, 'sys'));
 
 socket.on('char_received', ({ char, buffer }) => {
@@ -710,12 +1206,12 @@ socket.on('char_received', ({ char, buffer }) => {
   }, 2000);
 });
 
-// ── Connection ──
+// ── Connection ───────────────────────────────────────────────────────────────
 async function refreshPorts() {
   const sel = document.getElementById('port-select');
   const res = await fetch('/api/ports');
   const ports = await res.json();
-  sel.innerHTML = '<option value="">-- Seleccionar --</option>';
+  sel.innerHTML = '<option value="">-- Puerto --</option>';
   if (ports.length === 0) {
     sel.innerHTML += '<option disabled>Sin puertos detectados</option>';
     showToast('No se encontraron puertos COM', 'error');
@@ -747,42 +1243,43 @@ async function toggleConnect() {
 }
 
 function updateStatusUI(connected, port) {
-  const dot = document.getElementById('status-dot');
-  const txt = document.getElementById('status-text');
-  const btn = document.getElementById('btn-connect');
-  const sub = document.getElementById('topbar-sub');
-  const sendBtn = document.getElementById('btn-send');
+  const dot       = document.getElementById('status-dot');
+  const txt       = document.getElementById('status-text');
+  const pillDot   = document.getElementById('conn-pill-dot');
+  const btn       = document.getElementById('btn-connect');
+  const sub       = document.getElementById('topbar-sub');
+  const sendBtn   = document.getElementById('btn-send');
 
   if (connected) {
-    dot.className = 'status-dot online';
-    txt.textContent = port;
-    btn.className = 'btn-connect disconnect';
-    btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Desconectar`;
-    sub.textContent = `Conectado a ${port} · LiFi activo`;
+    dot.className    = 'status-dot online';
+    pillDot.className = 'conn-pill-dot online';
+    txt.textContent  = port;
+    btn.className    = 'btn-connect-pill disconnect';
+    btn.textContent  = 'Desconectar';
+    sub.textContent  = `Conectado a ${port} · LiFi activo`;
     if (sendBtn) sendBtn.disabled = false;
     addLog(`Conectado a ${port}`, 'sys');
   } else {
-    dot.className = 'status-dot offline';
-    txt.textContent = 'Sin conexión';
-    btn.className = 'btn-connect connect';
-    btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Conectar`;
-    sub.textContent = 'Sin conexión serial';
+    dot.className    = 'status-dot offline';
+    pillDot.className = 'conn-pill-dot';
+    txt.textContent  = 'Sin conexión';
+    btn.className    = 'btn-connect-pill connect';
+    btn.textContent  = 'Conectar';
+    sub.textContent  = 'Sin conexión serial';
     if (sendBtn) sendBtn.disabled = true;
     document.getElementById('buffer-bar').classList.remove('show');
     document.getElementById('typing-indicator').classList.remove('show');
   }
 }
 
-// ── Messaging ──
+// ── Messaging ────────────────────────────────────────────────────────────────
 async function sendMessage() {
   const input = document.getElementById('msg-input');
   const msg = input.value.trim();
   if (!msg) return;
   if (!isConnected) { showToast('Conecta un puerto primero', 'error'); return; }
-
   input.value = '';
   autoResize(input);
-
   const res = await fetch('/api/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -810,7 +1307,7 @@ async function flushBuffer() {
   document.getElementById('typing-indicator').classList.remove('show');
 }
 
-// ── Render messages ──
+// ── Render messages ──────────────────────────────────────────────────────────
 function renderMessage(entry, animate) {
   const area = document.getElementById('messages');
   const indicator = document.getElementById('typing-indicator');
@@ -828,15 +1325,15 @@ function renderMessage(entry, animate) {
 }
 
 function updateEmptyState() {
-  const area = document.getElementById('messages');
+  const area  = document.getElementById('messages');
   const empty = document.getElementById('empty-state');
   const hasMessages = area.querySelectorAll('.msg-row').length > 0;
   empty.style.display = hasMessages ? 'none' : 'flex';
 }
 
-// ── History ──
+// ── History ──────────────────────────────────────────────────────────────────
 function renderHistoryList(history) {
-  const list = document.getElementById('history-list');
+  const list  = document.getElementById('history-list');
   const empty = document.getElementById('history-empty');
   if (history.length === 0) { empty.style.display = 'flex'; return; }
   empty.style.display = 'none';
@@ -905,7 +1402,7 @@ async function clearHistory() {
   showToast('Historial limpiado', '');
 }
 
-// ── Log ──
+// ── Log ──────────────────────────────────────────────────────────────────────
 function addLog(msg, type = '') {
   const area = document.getElementById('log-area');
   const line = document.createElement('div');
@@ -916,7 +1413,7 @@ function addLog(msg, type = '') {
   area.scrollTop = area.scrollHeight;
 }
 
-// ── View switching ──
+// ── View switching ───────────────────────────────────────────────────────────
 let currentView = 'chat';
 
 function switchView(view) {
@@ -935,7 +1432,7 @@ function switchView(view) {
   document.getElementById('topbar-title').textContent = titles[view];
 }
 
-// ── Helpers ──
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
@@ -957,7 +1454,23 @@ function showToast(msg, type = '') {
   window._toastTimer = setTimeout(() => t.className = 'toast', 3000);
 }
 
-// ── Init ──
+// ── Theme persistence ─────────────────────────────────────────────────────────
+function restorePalette() {
+  const saved = localStorage.getItem('lifi-palette');
+  let idx = activeSwatchIndex;
+  if (saved) {
+    const found = PALETTES.findIndex(p => p.label === saved);
+    if (found !== -1) idx = found;
+  }
+  activeSwatchIndex = idx;
+  applyPalette(PALETTES[idx]);
+  const swatches = document.querySelectorAll('.swatch');
+  swatches.forEach((s, i) => s.classList.toggle('active', i === idx));
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+buildSwatches();
+restorePalette();
 refreshPorts();
 switchView('chat');
 </script>
