@@ -139,6 +139,201 @@
   .status-dot.online  { background: var(--success); box-shadow: 0 0 0 3px var(--success-bg); }
   .status-dot.offline { background: #bdbdbd; }
 
+  /* ── CONTACTS PANEL (sender) ── */
+  .contacts-panel {
+    width: 340px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .contacts-panel .contacts-header {
+    padding: 18px 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .contacts-panel .aldo-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: var(--accent);
+    flex-shrink: 0;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .contacts-panel .aldo-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .contacts-panel .aldo-name {
+    font-size: 16px; font-weight: 600; flex: 1;
+  }
+  .contacts-panel .contacts-actions {
+    display: flex; gap: 4px;
+  }
+  .contacts-panel .contacts-actions .icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    transition: background 0.15s;
+  }
+  .contacts-panel .contacts-actions .icon-btn:hover {
+    background: var(--bg);
+    color: var(--text);
+  }
+  .contacts-panel .contacts-actions .icon-btn svg {
+    width: 18px; height: 18px; fill: none; stroke: currentColor;
+  }
+  .contacts-search {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .contacts-search input {
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .contacts-search input:focus {
+    border-color: var(--accent);
+  }
+  .contacts-search input::placeholder {
+    color: var(--muted);
+  }
+  .contact-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+  .contact-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-item:hover {
+    background: var(--bg);
+  }
+  .contact-item.active {
+    background: var(--accent-bg);
+  }
+  .contact-item .contact-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: var(--accent);
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+.contact-item .contact-avatar img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+  .contact-item .contact-avatar .online-dot {
+    position: absolute;
+    bottom: 1px; right: 1px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--success);
+    border: 2px solid var(--sidebar);
+  }
+  .contact-item .contact-info {
+    flex: 1; min-width: 0;
+  }
+  .contact-item .contact-name-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 2px;
+  }
+  .contact-item .contact-name {
+    font-size: 15px; font-weight: 500; color: var(--text);
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .contact-item .contact-time {
+    font-size: 11px; color: var(--muted); flex-shrink: 0;
+  }
+  .contact-item .contact-preview {
+    font-size: 13px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .contact-item .contact-unread {
+    background: var(--accent);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .contacts-footer {
+    padding: 10px 16px 14px;
+    display: flex; align-items: center; gap: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ── CHAT HEADER (sender contact) ── */
+  .chat-contact-header {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .chat-contact-header.show {
+    display: flex;
+  }
+  .chat-contact-header .chat-contact-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: var(--accent);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+.chat-contact-header .chat-contact-avatar img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+  .chat-contact-header .chat-contact-info {
+    flex: 1; min-width: 0;
+  }
+  .chat-contact-header .chat-contact-name {
+    font-size: 15px; font-weight: 600;
+  }
+  .chat-contact-header .chat-contact-status {
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* Mensajes con nombre de contacto */
+  .msg-contact-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 2px;
+    padding: 0 4px;
+  }
+
   /* ── MAIN ── */
   .main {
     flex: 1;
@@ -683,7 +878,37 @@
 </head>
 <body>
 
-<!-- ══ SIDEBAR ══ -->
+<!-- ══ SIDEBAR / CONTACTS PANEL ══ -->
+{% if mode == 'sender' %}
+<aside class="contacts-panel" id="contactsPanel">
+  <div class="contacts-header">
+    <div class="aldo-avatar" id="aldoAvatar" title="Aldo">
+      <img src="" id="aldoAvatarImg" style="display:none" alt="Aldo">
+      <span id="aldoAvatarInitial">A</span>
+    </div>
+    <span class="aldo-name">Aldo</span>
+    <div class="contacts-actions">
+      <button class="icon-btn" onclick="switchView('history')" title="Historial">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </button>
+      <button class="icon-btn" onclick="switchView('log')" title="Log Arduino">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="contacts-search">
+    <input type="text" id="contactsSearch" placeholder="Buscar o empezar un chat..." oninput="filterContacts(this.value)">
+  </div>
+
+  <div class="contact-list" id="contactList"></div>
+
+  <div class="contacts-footer">
+    <div class="status-dot offline" id="status-dot"></div>
+    <span id="status-text">Sin conexión</span>
+  </div>
+</aside>
+{% else %}
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">
@@ -719,14 +944,19 @@
     <span id="status-text">Sin conexión</span>
   </div>
 </aside>
+{% endif %}
 
 <!-- ══ MAIN ══ -->
 <main class="main">
 
   <!-- ── TOPBAR ── -->
-  <div class="topbar">
+  <div class="topbar" id="topbar">
     <div class="topbar-info">
+      {% if mode == 'sender' %}
       <div class="topbar-title" id="topbar-title">Chat LiFi</div>
+      {% else %}
+      <div class="topbar-title" id="topbar-title">Chat LiFi</div>
+      {% endif %}
       <div class="topbar-sub" id="topbar-sub">Conecta un puerto para comenzar</div>
     </div>
 
@@ -804,6 +1034,20 @@
     </div>
   </div>
 
+  {% if mode == 'sender' %}
+  <!-- ── CHAT CONTACT HEADER (sender) ── -->
+  <div class="chat-contact-header" id="chatContactHeader">
+    <div class="chat-contact-avatar" id="chatContactAvatar">
+      <img src="" id="chatContactAvatarImg" style="display:none" alt="">
+      <span id="chatContactAvatarInitial"></span>
+    </div>
+    <div class="chat-contact-info">
+      <div class="chat-contact-name" id="chatContactName">Selecciona un contacto</div>
+      <div class="chat-contact-status" id="chatContactStatus">LiFi · En línea</div>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- ── VIEW: CHAT ── -->
   <div id="view-chat">
     <div class="messages-area" id="messages">
@@ -871,6 +1115,137 @@ const socket = io();
 
 let isConnected = false;
 let unreadCount = 0;
+
+// ── Contacts (sender mode) ────────────────────────────────────────────────────
+const CONTACTS = [
+  { name: 'Santiago', initial: 'S', color: '#e91e63' },
+  { name: 'Carla',    initial: 'C', color: '#9c27b0' },
+  { name: 'Brian',    initial: 'B', color: '#2196f3' },
+  { name: 'Glenda',   initial: 'G', color: '#4caf50' },
+  { name: 'David',    initial: 'D', color: '#ff9800' },
+  { name: 'Inge',     initial: 'I', color: '#607d8b' },
+];
+
+let selectedContact = null;
+let allMessages = [];
+
+function getContactPhoto(name) {
+  return '/static/contacts/' + name.toLowerCase().replace(/\s+/g, '_') + '.jpg';
+}
+
+function getContact(name) {
+  return CONTACTS.find(c => c.name === name);
+}
+
+function renderContacts() {
+  const list = document.getElementById('contactList');
+  if (!list) return;
+  list.innerHTML = '';
+  CONTACTS.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'contact-item' + (selectedContact === c.name ? ' active' : '');
+    div.dataset.name = c.name;
+
+    const contactMsgs = allMessages.filter(m => m.recipient === c.name);
+    const lastMsg = contactMsgs.length > 0 ? contactMsgs[contactMsgs.length - 1] : null;
+    const preview = lastMsg ? escHtml(lastMsg.text) : 'Sin mensajes';
+    const time = lastMsg ? lastMsg.timestamp : '';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'contact-avatar';
+    avatar.style.cssText = 'display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px';
+    avatar.style.background = c.color;
+    avatar.textContent = c.initial;
+
+    const avatarImg = document.createElement('img');
+    avatarImg.alt = c.name;
+    avatarImg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block';
+    avatarImg.onerror = function () { avatarImg.style.display = 'none'; };
+    avatarImg.src = getContactPhoto(c.name);
+    avatar.appendChild(avatarImg);
+
+    const info = document.createElement('div');
+    info.className = 'contact-info';
+    info.innerHTML =
+      '<div class="contact-name-row"><span class="contact-name">' + escHtml(c.name) + '</span><span class="contact-time">' + time + '</span></div>' +
+      '<div class="contact-preview">' + preview + '</div>';
+
+    div.appendChild(avatar);
+    div.appendChild(info);
+    div.onclick = () => selectContact(c.name);
+    list.appendChild(div);
+  });
+}
+
+function selectContact(name) {
+  selectedContact = name;
+  document.querySelectorAll('.contact-item').forEach(el => el.classList.toggle('active', el.dataset.name === name));
+
+  const header = document.getElementById('chatContactHeader');
+  const nameEl = document.getElementById('chatContactName');
+  const avatarImg = document.getElementById('chatContactAvatarImg');
+  const avatarInit = document.getElementById('chatContactAvatarInitial');
+  const title = document.getElementById('topbar-title');
+  const contact = getContact(name);
+
+  if (header) header.classList.add('show');
+  if (nameEl) nameEl.textContent = name;
+  if (title) title.textContent = 'Chat con ' + name;
+
+  if (avatarImg) {
+    avatarImg.style.display = 'block';
+    avatarImg.onload = function () { this.style.display = 'block'; if (avatarInit) avatarInit.style.display = 'none'; };
+    avatarImg.onerror = function () {
+      this.style.display = 'none';
+      if (avatarInit) { avatarInit.style.display = 'flex'; avatarInit.textContent = contact ? contact.initial : name[0]; }
+    };
+    avatarImg.src = getContactPhoto(name);
+  }
+  if (avatarInit && contact) {
+    avatarInit.textContent = contact.initial;
+    avatarInit.style.background = contact.color;
+    avatarInit.style.color = 'white';
+    avatarInit.style.display = 'none';
+    avatarInit.style.alignItems = 'center';
+    avatarInit.style.justifyContent = 'center';
+    avatarInit.style.width = '100%';
+    avatarInit.style.height = '100%';
+    avatarInit.style.fontSize = '14px';
+    avatarInit.style.fontWeight = '700';
+    avatarInit.style.borderRadius = '50%';
+  }
+
+  renderContactMessages();
+  switchView('chat');
+}
+
+function renderContactMessages() {
+  const area = document.getElementById('messages');
+  if (!area) return;
+  area.querySelectorAll('.msg-row').forEach(el => el.remove());
+
+  if (!selectedContact) {
+    updateEmptyState();
+    return;
+  }
+
+  const filtered = allMessages.filter(m => m.recipient === selectedContact);
+  filtered.forEach(entry => renderMessage(entry, false));
+  updateEmptyState();
+  area.scrollTop = area.scrollHeight;
+}
+
+function getContactMessages(name) {
+  return allMessages.filter(m => m.recipient === name);
+}
+
+function filterContacts(query) {
+  const items = document.querySelectorAll('.contact-item');
+  const q = query.toLowerCase();
+  items.forEach(el => {
+    el.style.display = el.dataset.name.toLowerCase().includes(q) ? 'flex' : 'none';
+  });
+}
 
 // ── Paletas de color globales ────────────────────────────────────────────────
 const PALETTES = [
@@ -1270,13 +1645,28 @@ socket.on('status_change', ({ connected, port }) => {
 });
 
 socket.on('history_load', (history) => {
-  history.forEach(entry => renderMessage(entry, false));
+  allMessages = history;
+  if (MODE === 'sender') {
+    renderContacts();
+    if (selectedContact) renderContactMessages();
+    updateEmptyState();
+  } else {
+    history.forEach(entry => renderMessage(entry, false));
+  }
   renderHistoryList(history);
   updateEmptyState();
 });
 
 socket.on('new_message', (entry) => {
-  renderMessage(entry, true);
+  allMessages.push(entry);
+  if (MODE === 'sender') {
+    renderContacts();
+    if (entry.recipient === selectedContact || (!entry.recipient && selectedContact === null)) {
+      renderMessage(entry, true);
+    }
+  } else {
+    renderMessage(entry, true);
+  }
   appendHistoryItem(entry);
   updateEmptyState();
   if (currentView !== 'chat') {
@@ -1375,12 +1765,13 @@ async function sendMessage() {
   const msg = input.value.trim();
   if (!msg) return;
   if (!isConnected) { showToast('Conecta un puerto primero', 'error'); return; }
+  if (MODE === 'sender' && !selectedContact) { showToast('Selecciona un contacto primero', 'error'); return; }
   input.value = '';
   autoResize(input);
   const res = await fetch('/api/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: msg })
+    body: JSON.stringify({ message: msg, recipient: selectedContact || 'General' })
   });
   const data = await res.json();
   if (!data.ok) showToast('Error: ' + data.error, 'error');
@@ -1411,7 +1802,12 @@ function renderMessage(entry, animate) {
   const row = document.createElement('div');
   row.className = `msg-row ${entry.direction}`;
   row.dataset.id = entry.id;
+  let recipientHtml = '';
+  if (MODE === 'sender' && entry.direction === 'sent' && entry.recipient && entry.recipient !== selectedContact) {
+    recipientHtml = `<div class="msg-contact-label">Para ${escHtml(entry.recipient)}</div>`;
+  }
   row.innerHTML = `
+    ${recipientHtml}
     <div class="msg-bubble">${escHtml(entry.text)}</div>
     <div class="msg-meta">
       <span class="msg-label ${entry.direction}">${entry.direction === 'sent' ? 'Enviado' : 'Recibido'}</span>
@@ -1425,7 +1821,22 @@ function updateEmptyState() {
   const area  = document.getElementById('messages');
   const empty = document.getElementById('empty-state');
   const hasMessages = area.querySelectorAll('.msg-row').length > 0;
-  empty.style.display = hasMessages ? 'none' : 'flex';
+  if (hasMessages) {
+    empty.style.display = 'none';
+  } else {
+    empty.style.display = 'flex';
+    if (MODE === 'sender') {
+      if (!selectedContact) {
+        empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>Selecciona un contacto</p>
+          <p style="font-size:12px">Elige una persona de la lista para chatear</p>`;
+      } else {
+        empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>No hay mensajes con ${escHtml(selectedContact)}</p>
+          <p style="font-size:12px">Escribe un mensaje y presiona Enviar</p>`;
+      }
+    }
+  }
 }
 
 // ── History ──────────────────────────────────────────────────────────────────
@@ -1448,11 +1859,14 @@ function renderHistoryList(history) {
     groups[date].forEach(e => {
       const item = document.createElement('div');
       item.className = 'history-item';
+      const who = e.direction === 'sent'
+        ? (e.recipient ? 'Aldo → ' + e.recipient : 'Tú (Emisor)')
+        : 'Receptor LiFi';
       item.innerHTML = `
         <div class="history-avatar ${e.direction}">${e.direction === 'sent' ? 'TX' : 'RX'}</div>
         <div class="history-body">
           <div class="history-header">
-            <span class="history-who">${e.direction === 'sent' ? 'Tú (Emisor)' : 'Receptor LiFi'}</span>
+            <span class="history-who">${who}</span>
             <span class="history-time">${e.timestamp}</span>
           </div>
           <div class="history-text">${escHtml(e.text)}</div>
@@ -1477,11 +1891,14 @@ function appendHistoryItem(entry) {
   }
   const item = document.createElement('div');
   item.className = 'history-item';
+  const who = entry.direction === 'sent'
+    ? (entry.recipient ? 'Aldo → ' + entry.recipient : 'Tú (Emisor)')
+    : 'Receptor LiFi';
   item.innerHTML = `
     <div class="history-avatar ${entry.direction}">${entry.direction === 'sent' ? 'TX' : 'RX'}</div>
     <div class="history-body">
       <div class="history-header">
-        <span class="history-who">${entry.direction === 'sent' ? 'Tú (Emisor)' : 'Receptor LiFi'}</span>
+        <span class="history-who">${who}</span>
         <span class="history-time">${entry.timestamp}</span>
       </div>
       <div class="history-text">${escHtml(entry.text)}</div>
@@ -1492,10 +1909,12 @@ function appendHistoryItem(entry) {
 async function clearHistory() {
   if (!confirm('¿Limpiar todo el historial?')) return;
   await fetch('/api/clear_history', { method: 'POST' });
+  allMessages = [];
   document.getElementById('messages').querySelectorAll('.msg-row').forEach(e => e.remove());
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('history-empty').style.display = 'flex';
   updateEmptyState();
+  if (MODE === 'sender') renderContacts();
   showToast('Historial limpiado', '');
 }
 
@@ -1516,17 +1935,34 @@ let currentView = 'chat';
 function switchView(view) {
   currentView = view;
   ['chat', 'history', 'log'].forEach(v => {
-    document.getElementById(`view-${v}`).style.display = v === view ? 'flex' : 'none';
-    document.getElementById(`nav-${v}`).classList.toggle('active', v === view);
+    const el = document.getElementById(`view-${v}`);
+    if (el) el.style.display = v === view ? 'flex' : 'none';
+    const nav = document.getElementById(`nav-${v}`);
+    if (nav) nav.classList.toggle('active', v === view);
   });
   if (view === 'chat') {
     unreadCount = 0;
     const badge = document.getElementById('badge-chat');
-    badge.style.display = 'none';
-    document.getElementById('messages').scrollTop = 999999;
+    if (badge) { badge.style.display = 'none'; }
+    const msgs = document.getElementById('messages');
+    if (msgs) msgs.scrollTop = 999999;
   }
   const titles = { chat: 'Chat LiFi', history: 'Historial de mensajes', log: 'Log del Arduino' };
-  document.getElementById('topbar-title').textContent = titles[view];
+  const titleEl = document.getElementById('topbar-title');
+  if (titleEl) {
+    if (MODE === 'sender' && view === 'chat' && selectedContact) {
+      titleEl.textContent = 'Chat con ' + selectedContact;
+    } else {
+      titleEl.textContent = titles[view];
+    }
+  }
+  // In sender mode, hide chat contact header when not in chat view
+  if (MODE === 'sender') {
+    const header = document.getElementById('chatContactHeader');
+    if (header) {
+      header.classList.toggle('show', view === 'chat' && !!selectedContact);
+    }
+  }
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -1581,7 +2017,24 @@ buildSwatches();
 restorePalette();
 restoreCustomBg();
 refreshPorts();
-switchView('chat');
+
+// Load Aldo avatar
+if (MODE === 'sender') {
+  const aldoImg = document.getElementById('aldoAvatarImg');
+  if (aldoImg) {
+    aldoImg.onload = function () { this.style.display = 'block'; document.getElementById('aldoAvatarInitial').style.display = 'none'; };
+    aldoImg.onerror = function () { this.style.display = 'none'; document.getElementById('aldoAvatarInitial').style.display = 'flex'; };
+    aldoImg.src = '/static/contacts/aldo.jpg';
+  }
+  renderContacts();
+  switchView('chat');
+  // Auto-select first contact
+  if (CONTACTS.length > 0) {
+    selectContact(CONTACTS[0].name);
+  }
+} else {
+  switchView('chat');
+}
 </script>
 </body>
 </html>

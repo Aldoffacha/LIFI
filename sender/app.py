@@ -95,6 +95,7 @@ def disconnect_port():
 def send_message():
     data = request.json
     msg = data.get('message', '').strip()
+    recipient = data.get('recipient', 'General')
     if not msg:
         return jsonify({'ok': False, 'error': 'Mensaje vacío'})
     if not state['connected'] or not state['serial']:
@@ -106,6 +107,7 @@ def send_message():
             'id': len(state['history']) + 1,
             'text': msg,
             'direction': 'sent',
+            'recipient': recipient,
             'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
             'date': datetime.datetime.now().strftime('%Y-%m-%d')
         }
