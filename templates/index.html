@@ -1817,11 +1817,18 @@ socket.on('char_received', ({ char, buffer }) => {
 });
 
 // ── Connection ───────────────────────────────────────────────────────────────
-async function refreshPorts() {
+let knownPorts = [];
+
+async function refreshPorts(silent = false) {
   const res = await fetch('/api/ports');
   const ports = await res.json();
+  const newDevices = new Set(ports.map(p => p.device));
+  const prevDevices = new Set(knownPorts.map(p => p.device));
+  knownPorts = ports;
+
   for (const role of ['tx', 'rx']) {
     const sel = document.getElementById(`port-select-${role}`);
+    const prevVal = sel.value;
     sel.innerHTML = '<option value="">-- Puerto --</option>';
     if (ports.length === 0) {
       sel.innerHTML += '<option disabled>Sin puertos detectados</option>';
@@ -1830,9 +1837,15 @@ async function refreshPorts() {
         sel.innerHTML += `<option value="${p.device}">${p.device} — ${p.desc}</option>`;
       });
     }
+    if (prevVal && newDevices.has(prevVal)) {
+      sel.value = prevVal;
+    }
   }
-  const count = ports.length;
-  showToast(`${count} puerto(s) encontrado(s)`, count > 0 ? 'success' : 'error');
+
+  if (!silent) {
+    const count = ports.length;
+    showToast(`${count} puerto(s) encontrado(s)`, count > 0 ? 'success' : 'error');
+  }
 }
 
 async function toggleConnect(role) {
@@ -1846,8 +1859,12 @@ async function toggleConnect(role) {
     const data = await res.json();
     if (data.ok) showToast(`${role.toUpperCase()} desconectado`, '');
   } else {
-    const port = document.getElementById(`port-select-${role}`).value;
-    if (!port) { showToast(`Selecciona un puerto ${role.toUpperCase()} primero`, 'error'); return; }
+    let port = document.getElementById(`port-select-${role}`).value;
+    if (!port && knownPorts.length > 0) {
+      port = knownPorts[0].device;
+      document.getElementById(`port-select-${role}`).value = port;
+    }
+    if (!port) { showToast(`No hay puertos disponibles para ${role.toUpperCase()}`, 'error'); return; }
     const res = await fetch('/api/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2207,6 +2224,7 @@ buildEmojiPicker();
 restorePalette();
 restoreCustomBg();
 refreshPorts();
+setInterval(() => refreshPorts(true), 3000);
 
 // Load local user avatar
 const aldoImg = document.getElementById('aldoAvatarImg');
