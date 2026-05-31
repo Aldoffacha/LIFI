@@ -14,15 +14,17 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = 'lifi-receiver-secret'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-BUFFER_TIMEOUT = 1.5  # segundos sin nuevos chars → guardar mensaje automáticamente
+BUFFER_TIMEOUT = 1.5
+
+SYS_PATTERNS = ['[CAL]', '[SYS]', 'Conectado', 'Esperando', 'desconect',
+                'inicializando', 'listo', 'Receptor', 'Emisor', 'Puerto', 'Baudrate']
 
 state = {
-    'port': None,
-    'serial': None,
-    'connected': False,
+    'tx':  { 'port': None, 'serial': None, 'connected': False },
+    'rx':  { 'port': None, 'serial': None, 'connected': False },
     'history': [],
     'char_buffer': '',
-    'last_char_time': 0,  # timestamp del último char recibido
+    'last_char_time': 0,
 }
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
@@ -39,41 +41,32 @@ def save_history():
 
 state['history'] = load_history()
 
-
 def parse_arduino_line(line):
-    """
-    El Arduino receptor imprime: "Bits: 01001000 → H"
-    Retorna el carácter decodificado, o None si la línea no es de ese formato.
-    También maneja el caso especial del carácter '\n' (ASCII 10).
-    """
     if '→' in line and 'Bits:' in line:
         partes = line.split('→')
         if len(partes) == 2:
             char = partes[1].strip()
-            # El Arduino puede imprimir el salto de línea como literal '\n' o vacío
             if char == '\\n' or char == '(nueva línea)' or char == '(newline)':
                 return '\n'
             if char and char != '(carácter no imprimible)':
                 return char
-            # Si char está vacío pero los bits indican ASCII 10 → salto de línea
             if not char:
                 bits_part = partes[0].replace('Bits:', '').strip()
                 if bits_part == '00001010':
                     return '\n'
     return None
 
-
 def save_and_emit_message():
-    """Guarda el buffer actual como mensaje en el historial y lo emite."""
     msg_text = state['char_buffer'].strip()
     state['char_buffer'] = ''
-    state['last_char_time'] = 0  # resetear timestamp
+    state['last_char_time'] = 0
     if not msg_text:
         return
     entry = {
         'id': len(state['history']) + 1,
         'text': msg_text,
         'direction': 'received',
+        'sender': 'General',
         'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
         'date': datetime.datetime.now().strftime('%Y-%m-%d')
     }
@@ -81,26 +74,23 @@ def save_and_emit_message():
     save_history()
     socketio.emit('new_message', entry)
 
+def is_system_line(line):
+    return any(p in line for p in SYS_PATTERNS)
 
-def read_serial_loop():
-    """Lee continuamente el puerto serial del Arduino receptor."""
+def read_rx_loop():
+    """Lee del puerto RX del Arduino receptor en background."""
     while True:
         try:
-            if state['serial'] and state['connected']:
+            rx = state['rx']
+            if rx['serial'] and rx['connected']:
 
-                # ── Timeout automático del buffer ──────────────────────────────
-                # Si hay chars acumulados y no llega nada nuevo en BUFFER_TIMEOUT
-                # segundos, guardar el mensaje tal como está.
                 if (state['char_buffer'] and
                         state['last_char_time'] > 0 and
                         time.time() - state['last_char_time'] > BUFFER_TIMEOUT):
                     save_and_emit_message()
 
-                # ── Lectura del puerto ─────────────────────────────────────────
-                if state['serial'].in_waiting > 0:
-                    # read_until es más reactivo que readline() cuando el Arduino
-                    # no siempre termina con '\n'
-                    raw = state['serial'].read_until(b'\n', size=256).decode(
+                if rx['serial'].in_waiting > 0:
+                    raw = rx['serial'].read_until(b'\n', size=256).decode(
                         ENCODING, errors='ignore'
                     ).strip()
 
@@ -108,39 +98,32 @@ def read_serial_loop():
                         eventlet.sleep(0.02)
                         continue
 
-                    # Reenviar log crudo al frontend
                     socketio.emit('arduino_log', {'msg': raw})
 
-                    # Intentar extraer carácter decodificado
                     char = parse_arduino_line(raw)
 
                     if char is not None:
                         if char == '\n':
-                            # Fin de mensaje explícito — guardar lo acumulado
                             save_and_emit_message()
                         else:
                             state['char_buffer'] += char
-                            state['last_char_time'] = time.time()  # actualizar timestamp
-                            # Emitir progreso del buffer al frontend
+                            state['last_char_time'] = time.time()
                             socketio.emit('char_received', {
                                 'char': char,
                                 'buffer': state['char_buffer']
                             })
-
-                    # Mensajes de calibración/estado del Arduino
-                    elif raw.startswith('[CAL]') or 'Esperando' in raw or 'Receptor' in raw:
-                        socketio.emit('system_msg', {'msg': raw})
+                    elif not is_system_line(raw):
+                        socketio.emit('char_received', {'char': '', 'buffer': raw})
 
             eventlet.sleep(0.02)
 
         except Exception as e:
-            socketio.emit('arduino_log', {'msg': f'[Error]: {str(e)}'})
+            socketio.emit('arduino_log', {'msg': f'[Error RX]: {str(e)}'})
             eventlet.sleep(1)
-
 
 @app.route('/')
 def index():
-    return render_template('index.html', mode='receiver', title='LiFi Chat — Receptor')
+    return render_template('index.html', mode='receiver', title='LiFi Chat — Carla')
 
 @app.route('/api/ports')
 def get_ports():
@@ -152,33 +135,66 @@ def get_ports():
 def connect_port():
     data = request.json
     port = data.get('port')
+    role = data.get('role', 'rx')
     if not port:
         return jsonify({'ok': False, 'error': 'Puerto no especificado'})
     try:
-        if state['serial'] and state['serial'].is_open:
-            state['serial'].close()
-        # timeout=0.1 → no bloquea el loop de eventlet esperando '\n'
-        state['serial'] = serial.Serial(port, BAUDRATE, timeout=0.1)
-        state['port'] = port
-        state['connected'] = True
-        state['char_buffer'] = ''       # limpiar buffer al reconectar
-        state['last_char_time'] = 0
-        socketio.emit('status_change', {'connected': True, 'port': port})
-        eventlet.spawn(read_serial_loop)
-        return jsonify({'ok': True, 'port': port})
+        target = state[role]
+        if target['serial'] and target['serial'].is_open:
+            target['serial'].close()
+        target['serial'] = serial.Serial(port, BAUDRATE, timeout=0.1)
+        target['port'] = port
+        target['connected'] = True
+        if role == 'rx':
+            state['char_buffer'] = ''
+            state['last_char_time'] = 0
+            eventlet.spawn(read_rx_loop)
+        socketio.emit('status_change', {'connected': True, 'port': port, 'role': role})
+        return jsonify({'ok': True, 'port': port, 'role': role})
     except Exception as e:
-        state['connected'] = False
+        state[role]['connected'] = False
         return jsonify({'ok': False, 'error': str(e)})
 
 @app.route('/api/disconnect', methods=['POST'])
 def disconnect_port():
+    data = request.json
+    role = data.get('role', 'tx')
     try:
-        if state['serial']:
-            state['serial'].close()
-        state['connected'] = False
-        state['port'] = None
-        socketio.emit('status_change', {'connected': False, 'port': None})
+        target = state[role]
+        if target['serial']:
+            target['serial'].close()
+        target['connected'] = False
+        target['port'] = None
+        socketio.emit('status_change', {'connected': False, 'port': None, 'role': role})
         return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)})
+
+@app.route('/api/send', methods=['POST'])
+def send_message():
+    data = request.json
+    msg = data.get('message', '').strip()
+    recipient = data.get('recipient', 'General')
+    if not msg:
+        return jsonify({'ok': False, 'error': 'Mensaje vacío'})
+    tx = state['tx']
+    if not tx['connected'] or not tx['serial']:
+        return jsonify({'ok': False, 'error': 'Puerto TX no conectado'})
+    try:
+        tx['serial'].write((msg + '\n').encode(ENCODING))
+        entry = {
+            'id': len(state['history']) + 1,
+            'text': msg,
+            'direction': 'sent',
+            'recipient': recipient,
+            'sender': 'Carla',
+            'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+            'date': datetime.datetime.now().strftime('%Y-%m-%d')
+        }
+        state['history'].append(entry)
+        save_history()
+        socketio.emit('new_message', entry)
+        return jsonify({'ok': True, 'entry': entry})
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)})
 
@@ -194,21 +210,28 @@ def clear_history():
 
 @app.route('/api/status')
 def get_status():
-    return jsonify({'connected': state['connected'], 'port': state['port'], 'mode': 'receiver'})
+    return jsonify({
+        'connected': state['tx']['connected'] or state['rx']['connected'],
+        'port': state['tx']['port'] or state['rx']['port'],
+        'mode': 'receiver',
+        'tx': state['tx'],
+        'rx': state['rx']
+    })
 
 @socketio.on('connect')
 def on_connect():
-    emit('status_change', {'connected': state['connected'], 'port': state['port']})
+    for role in ('tx', 'rx'):
+        t = state[role]
+        emit('status_change', {'connected': t['connected'], 'port': t['port'], 'role': role})
     emit('history_load', state['history'])
 
 @socketio.on('flush_buffer')
 def flush_buffer():
-    """Permite forzar el guardado del buffer actual como mensaje (botón manual)."""
     save_and_emit_message()
 
 if __name__ == '__main__':
     print("=" * 50)
-    print("  LiFi Web — RECEPTOR")
+    print("  LiFi Web — RECEPTOR (TX+RX)")
     print("  Abre: http://localhost:5001")
     print("=" * 50)
     socketio.run(app, host='0.0.0.0', port=5001, debug=False)

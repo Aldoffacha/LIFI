@@ -5,7 +5,7 @@ import serial
 import serial.tools.list_ports
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
-import sys, os, json, datetime
+import sys, os, json, datetime, time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from shared.protocol import BAUDRATE, ENCODING, TIMEOUT
@@ -14,12 +14,15 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = 'lifi-sender-secret'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-# Estado global
+SYS_PATTERNS = ['[CAL]', '[SYS]', 'Conectado', 'Esperando', 'desconect',
+                'inicializando', 'listo', 'Bits:', 'Error', '[Error]',
+                'Receptor', 'Emisor', 'Puerto', 'Baudrate']
+
 state = {
-    'port': None,
-    'serial': None,
-    'connected': False,
-    'history': []
+    'tx':  { 'port': None, 'serial': None, 'connected': False },
+    'rx':  { 'port': None, 'serial': None, 'connected': False },
+    'history': [],
+    'last_recv_time': 0
 }
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
@@ -36,18 +39,38 @@ def save_history():
 
 state['history'] = load_history()
 
-def read_serial_loop():
-    """Lee respuestas del Arduino emisor en background."""
+def is_system_line(line):
+    return any(p in line for p in SYS_PATTERNS)
+
+def read_rx_loop():
     while True:
         try:
-            if state['serial'] and state['connected']:
-                if state['serial'].in_waiting > 0:
-                    line = state['serial'].readline().decode(ENCODING, errors='ignore').strip()
+            rx = state['rx']
+            if rx['serial'] and rx['connected']:
+                if rx['serial'].in_waiting > 0:
+                    line = rx['serial'].readline().decode(ENCODING, errors='ignore').strip()
                     if line:
                         socketio.emit('arduino_log', {'msg': line})
+                        socketio.emit('char_received', {'char': '', 'buffer': line})
+                        if not is_system_line(line):
+                            now = time.time()
+                            if state['last_recv_time'] > 0 and now - state['last_recv_time'] < 0.5:
+                                continue
+                            state['last_recv_time'] = now
+                            entry = {
+                                'id': len(state['history']) + 1,
+                                'text': line,
+                                'direction': 'received',
+                                'sender': 'General',
+                                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                                'date': datetime.datetime.now().strftime('%Y-%m-%d')
+                            }
+                            state['history'].append(entry)
+                            save_history()
+                            socketio.emit('new_message', entry)
             eventlet.sleep(0.05)
         except Exception as e:
-            socketio.emit('arduino_log', {'msg': f'[Error lectura]: {str(e)}'})
+            socketio.emit('arduino_log', {'msg': f'[Error RX]: {str(e)}'})
             eventlet.sleep(1)
 
 @app.route('/')
@@ -64,29 +87,35 @@ def get_ports():
 def connect_port():
     data = request.json
     port = data.get('port')
+    role = data.get('role', 'tx')
     if not port:
         return jsonify({'ok': False, 'error': 'Puerto no especificado'})
     try:
-        if state['serial'] and state['serial'].is_open:
-            state['serial'].close()
-        state['serial'] = serial.Serial(port, BAUDRATE, timeout=TIMEOUT)
-        state['port'] = port
-        state['connected'] = True
-        socketio.emit('status_change', {'connected': True, 'port': port})
-        eventlet.spawn(read_serial_loop)
-        return jsonify({'ok': True, 'port': port})
+        target = state[role]
+        if target['serial'] and target['serial'].is_open:
+            target['serial'].close()
+        target['serial'] = serial.Serial(port, BAUDRATE, timeout=TIMEOUT)
+        target['port'] = port
+        target['connected'] = True
+        socketio.emit('status_change', {'connected': True, 'port': port, 'role': role})
+        if role == 'rx':
+            eventlet.spawn(read_rx_loop)
+        return jsonify({'ok': True, 'port': port, 'role': role})
     except Exception as e:
-        state['connected'] = False
+        state[role]['connected'] = False
         return jsonify({'ok': False, 'error': str(e)})
 
 @app.route('/api/disconnect', methods=['POST'])
 def disconnect_port():
+    data = request.json
+    role = data.get('role', 'tx')
     try:
-        if state['serial']:
-            state['serial'].close()
-        state['connected'] = False
-        state['port'] = None
-        socketio.emit('status_change', {'connected': False, 'port': None})
+        target = state[role]
+        if target['serial']:
+            target['serial'].close()
+        target['connected'] = False
+        target['port'] = None
+        socketio.emit('status_change', {'connected': False, 'port': None, 'role': role})
         return jsonify({'ok': True})
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)})
@@ -98,16 +127,17 @@ def send_message():
     recipient = data.get('recipient', 'General')
     if not msg:
         return jsonify({'ok': False, 'error': 'Mensaje vacío'})
-    if not state['connected'] or not state['serial']:
-        return jsonify({'ok': False, 'error': 'No conectado al puerto serial'})
+    tx = state['tx']
+    if not tx['connected'] or not tx['serial']:
+        return jsonify({'ok': False, 'error': 'Puerto TX no conectado'})
     try:
-        line = msg + '\n'
-        state['serial'].write(line.encode(ENCODING))
+        tx['serial'].write((msg + '\n').encode(ENCODING))
         entry = {
             'id': len(state['history']) + 1,
             'text': msg,
             'direction': 'sent',
             'recipient': recipient,
+            'sender': 'Aldo',
             'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
             'date': datetime.datetime.now().strftime('%Y-%m-%d')
         }
@@ -130,16 +160,24 @@ def clear_history():
 
 @app.route('/api/status')
 def get_status():
-    return jsonify({'connected': state['connected'], 'port': state['port'], 'mode': 'sender'})
+    return jsonify({
+        'connected': state['tx']['connected'] or state['rx']['connected'],
+        'port': state['tx']['port'] or state['rx']['port'],
+        'mode': 'sender',
+        'tx': state['tx'],
+        'rx': state['rx']
+    })
 
 @socketio.on('connect')
 def on_connect():
-    emit('status_change', {'connected': state['connected'], 'port': state['port']})
+    for role in ('tx', 'rx'):
+        t = state[role]
+        emit('status_change', {'connected': t['connected'], 'port': t['port'], 'role': role})
     emit('history_load', state['history'])
 
 if __name__ == '__main__':
     print("=" * 50)
-    print("  LiFi Web — EMISOR")
+    print("  LiFi Web — EMISOR (TX+RX)")
     print("  Abre: http://localhost:5000")
     print("=" * 50)
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)

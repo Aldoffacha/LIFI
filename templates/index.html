@@ -456,6 +456,79 @@
   .btn-connect-pill.disconnect { background: var(--danger-bg); color: var(--danger); }
   .btn-connect-pill.disconnect:hover { background: var(--danger-bg); filter: brightness(0.9); }
 
+  /* ── DUAL CONNECTION (TX + RX) ── */
+  .conn-dual {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-wrap: nowrap;
+  }
+  .conn-dual .conn-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .conn-dual .conn-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #bdbdbd;
+    flex-shrink: 0;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .conn-dual .conn-dot.online {
+    background: var(--success);
+    box-shadow: 0 0 0 2px var(--success-bg);
+  }
+  .conn-dual select {
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 10px;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    max-width: 72px;
+    flex-shrink: 1;
+    min-width: 0;
+    padding: 0 2px;
+  }
+  .conn-dual .btn-conn {
+    padding: 2px 6px;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .conn-dual .btn-conn.on  { background: var(--accent); color: white; }
+  .conn-dual .btn-conn.on:hover { background: var(--accent2); }
+  .conn-dual .btn-conn.off { background: var(--danger-bg); color: var(--danger); padding: 2px 4px; font-size: 8px; }
+  .conn-dual .btn-conn.off:hover { filter: brightness(0.9); }
+  .conn-dual .conn-refresh {
+    width: 20px; height: 20px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--muted);
+    padding: 0;
+  }
+  .conn-dual .conn-refresh:hover { background: var(--bg); }
+  .conn-dual .conn-refresh svg { width: 11px; height: 11px; stroke: currentColor; fill: none; }
+  .conn-sep {
+    width: 1px; height: 16px;
+    background: var(--border);
+    flex-shrink: 0;
+    margin: 0 2px;
+  }
+
   /* ── CUSTOM BACKGROUND ── */
   .dropdown-divider {
     height: 1px;
@@ -750,6 +823,67 @@
   }
   #msg-input::placeholder { color: var(--muted); }
 
+  /* ── Emoji picker ── */
+  .btn-emoji {
+    width: 38px; height: 38px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+    color: var(--muted);
+    padding: 0;
+  }
+  .btn-emoji:hover { background: var(--bg); color: var(--text); }
+  .btn-emoji:active { transform: scale(0.94); }
+  .btn-emoji svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
+
+  .emoji-picker {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    display: none;
+    z-index: 200;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .emoji-picker.open { display: block; }
+
+  .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+  .emoji-grid-item {
+    width: 38px; height: 38px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s;
+    position: relative;
+  }
+  .emoji-grid-item:hover { background: var(--bg); }
+  .emoji-grid-item .emoji-code {
+    position: absolute;
+    bottom: -13px;
+    font-size: 7px;
+    font-family: var(--mono);
+    color: var(--muted);
+    white-space: nowrap;
+    pointer-events: none;
+    display: none;
+    line-height: 1;
+  }
+  .emoji-grid-item:hover .emoji-code { display: block; }
+
   .btn-send {
     width: 42px; height: 42px;
     background: var(--accent);
@@ -877,16 +1011,16 @@
 </style>
 </head>
 <body>
+{% set local_user = 'Carla' if mode == 'receiver' else 'Aldo' %}
 
-<!-- ══ SIDEBAR / CONTACTS PANEL ══ -->
-{% if mode == 'sender' %}
+<!-- ══ CONTACTS PANEL (both modes) ══ -->
 <aside class="contacts-panel" id="contactsPanel">
   <div class="contacts-header">
-    <div class="aldo-avatar" id="aldoAvatar" title="Aldo">
-      <img src="" id="aldoAvatarImg" style="display:none" alt="Aldo">
-      <span id="aldoAvatarInitial">A</span>
+    <div class="aldo-avatar" id="aldoAvatar" title="{{ local_user }}">
+      <img src="" id="aldoAvatarImg" style="display:none" alt="{{ local_user }}">
+      <span id="aldoAvatarInitial">{{ local_user[0] }}</span>
     </div>
-    <span class="aldo-name">Aldo</span>
+    <span class="aldo-name" id="aldoName">{{ local_user }}</span>
     <div class="contacts-actions">
       <button class="icon-btn" onclick="switchView('history')" title="Historial">
         <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -908,43 +1042,6 @@
     <span id="status-text">Sin conexión</span>
   </div>
 </aside>
-{% else %}
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    </div>
-    <span class="logo-text">Li<span>Fi</span> Chat</span>
-  </div>
-
-  <!-- Nav -->
-  <nav class="sidebar-nav">
-    <div class="nav-section">Vistas</div>
-
-    <div class="nav-item active" id="nav-chat" onclick="switchView('chat')">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Chat
-      <span class="nav-badge" id="badge-chat" style="display:none">0</span>
-    </div>
-
-    <div class="nav-item" id="nav-history" onclick="switchView('history')">
-      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Historial
-    </div>
-
-    <div class="nav-item" id="nav-log" onclick="switchView('log')">
-      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-      Log Arduino
-    </div>
-  </nav>
-
-  <!-- Status -->
-  <div class="status-row">
-    <div class="status-dot offline" id="status-dot"></div>
-    <span id="status-text">Sin conexión</span>
-  </div>
-</aside>
-{% endif %}
 
 <!-- ══ MAIN ══ -->
 <main class="main">
@@ -952,11 +1049,7 @@
   <!-- ── TOPBAR ── -->
   <div class="topbar" id="topbar">
     <div class="topbar-info">
-      {% if mode == 'sender' %}
       <div class="topbar-title" id="topbar-title">Chat LiFi</div>
-      {% else %}
-      <div class="topbar-title" id="topbar-title">Chat LiFi</div>
-      {% endif %}
       <div class="topbar-sub" id="topbar-sub">Conecta un puerto para comenzar</div>
     </div>
 
@@ -970,17 +1063,23 @@
 
       <div class="topbar-divider"></div>
 
-      <!-- Pill de conexión -->
-      <div class="conn-pill">
-        <div class="conn-pill-dot" id="conn-pill-dot"></div>
-        <select id="port-select" aria-label="Puerto serial">
+      <!-- Conexión TX + RX -->
+      <div class="conn-dual">
+        <span class="conn-label">TX</span>
+        <div class="conn-dot" id="conn-pill-dot-tx"></div>
+        <select id="port-select-tx">
           <option value="">-- Puerto --</option>
         </select>
-        <button class="conn-pill-refresh" onclick="refreshPorts()" title="Actualizar puertos">
+        <button class="btn-conn on" id="btn-connect-tx" onclick="toggleConnect('tx')">C</button>
+        <div class="conn-sep"></div>
+        <span class="conn-label">RX</span>
+        <div class="conn-dot" id="conn-pill-dot-rx"></div>
+        <select id="port-select-rx">
+          <option value="">-- Puerto --</option>
+        </select>
+        <button class="btn-conn on" id="btn-connect-rx" onclick="toggleConnect('rx')">C</button>
+        <button class="conn-refresh" onclick="refreshPorts()" title="Actualizar puertos">
           <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        </button>
-        <button class="btn-connect-pill connect" id="btn-connect" onclick="toggleConnect()">
-          Conectar
         </button>
       </div>
 
@@ -1034,8 +1133,7 @@
     </div>
   </div>
 
-  {% if mode == 'sender' %}
-  <!-- ── CHAT CONTACT HEADER (sender) ── -->
+  <!-- ── CHAT CONTACT HEADER ── -->
   <div class="chat-contact-header" id="chatContactHeader">
     <div class="chat-contact-avatar" id="chatContactAvatar">
       <img src="" id="chatContactAvatarImg" style="display:none" alt="">
@@ -1046,7 +1144,6 @@
       <div class="chat-contact-status" id="chatContactStatus">LiFi · En línea</div>
     </div>
   </div>
-  {% endif %}
 
   <!-- ── VIEW: CHAT ── -->
   <div id="view-chat">
@@ -1054,7 +1151,7 @@
       <div class="empty-state" id="empty-state">
         <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <p>No hay mensajes aún</p>
-        <p style="font-size:12px">{% if mode == 'sender' %}Escribe un mensaje y presiona Enviar{% else %}Esperando mensajes del emisor via LiFi...{% endif %}</p>
+        <p style="font-size:12px">Selecciona un contacto y escribe un mensaje</p>
       </div>
       <div class="typing-indicator" id="typing-indicator">
         <div class="typing-dot"></div>
@@ -1069,22 +1166,22 @@
       <button onclick="flushBuffer()">Guardar</button>
     </div>
 
-    <!-- Input (solo emisor) / Nota (receptor) -->
-    {% if mode == 'sender' %}
+    <!-- Input area (both modes) -->
     <div class="input-area">
       <div class="input-wrap">
         <textarea id="msg-input" placeholder="Escribe un mensaje LiFi..." rows="1"
           onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
       </div>
+      <div style="position:relative;">
+        <button class="btn-emoji" id="btn-emoji" onclick="toggleEmojiPicker(event)" title="Emojis" type="button">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <div class="emoji-picker" id="emojiPicker"></div>
+      </div>
       <button class="btn-send" id="btn-send" onclick="sendMessage()" disabled title="Conecta primero un puerto">
         <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg>
       </button>
     </div>
-    {% else %}
-    <div class="receiver-note">
-      📡 Receptor activo — los mensajes LiFi aparecen automáticamente arriba
-    </div>
-    {% endif %}
   </div>
 
   <!-- ── VIEW: HISTORY ── -->
@@ -1113,18 +1210,33 @@
 const MODE = "{{ mode }}";
 const socket = io();
 
-let isConnected = false;
 let unreadCount = 0;
+const connectionState = {
+  tx: { connected: false, port: null },
+  rx: { connected: false, port: null }
+};
+function anyConnected() { return connectionState.tx.connected || connectionState.rx.connected; }
 
-// ── Contacts (sender mode) ────────────────────────────────────────────────────
-const CONTACTS = [
-  { name: 'Santiago', initial: 'S', color: '#e91e63' },
-  { name: 'Carla',    initial: 'C', color: '#9c27b0' },
-  { name: 'Brian',    initial: 'B', color: '#2196f3' },
-  { name: 'Glenda',   initial: 'G', color: '#4caf50' },
-  { name: 'David',    initial: 'D', color: '#ff9800' },
-  { name: 'Inge',     initial: 'I', color: '#607d8b' },
-];
+// ── Contacts ──────────────────────────────────────────────────────────────────
+const LOCAL_USER = MODE === 'sender' ? 'Aldo' : 'Carla';
+
+const CONTACTS = MODE === 'sender'
+  ? [
+      { name: 'Carla',    initial: 'C', color: '#9c27b0' },
+      { name: 'Santiago', initial: 'S', color: '#e91e63' },
+      { name: 'Brian',    initial: 'B', color: '#2196f3' },
+      { name: 'Glenda',   initial: 'G', color: '#4caf50' },
+      { name: 'David',    initial: 'D', color: '#ff9800' },
+      { name: 'Inge',     initial: 'I', color: '#607d8b' },
+    ]
+  : [
+      { name: 'Aldo',     initial: 'A', color: '#1a73e8' },
+      { name: 'Santiago', initial: 'S', color: '#e91e63' },
+      { name: 'Brian',    initial: 'B', color: '#2196f3' },
+      { name: 'Glenda',   initial: 'G', color: '#4caf50' },
+      { name: 'David',    initial: 'D', color: '#ff9800' },
+      { name: 'Inge',     initial: 'I', color: '#607d8b' },
+    ];
 
 let selectedContact = null;
 let allMessages = [];
@@ -1146,9 +1258,11 @@ function renderContacts() {
     div.className = 'contact-item' + (selectedContact === c.name ? ' active' : '');
     div.dataset.name = c.name;
 
-    const contactMsgs = allMessages.filter(m => m.recipient === c.name);
+    const contactMsgs = allMessages.filter(m =>
+      m.recipient === c.name || m.sender === c.name
+    );
     const lastMsg = contactMsgs.length > 0 ? contactMsgs[contactMsgs.length - 1] : null;
-    const preview = lastMsg ? escHtml(lastMsg.text) : 'Sin mensajes';
+    const preview = lastMsg ? emojify(escHtml(lastMsg.text)) : 'Sin mensajes';
     const time = lastMsg ? lastMsg.timestamp : '';
 
     const avatar = document.createElement('div');
@@ -1229,14 +1343,22 @@ function renderContactMessages() {
     return;
   }
 
-  const filtered = allMessages.filter(m => m.recipient === selectedContact);
+  const filtered = allMessages.filter(m =>
+    m.recipient === selectedContact ||
+    m.sender === selectedContact ||
+    (m.direction === 'received' && (!m.sender || m.sender === 'General'))
+  );
   filtered.forEach(entry => renderMessage(entry, false));
   updateEmptyState();
   area.scrollTop = area.scrollHeight;
 }
 
 function getContactMessages(name) {
-  return allMessages.filter(m => m.recipient === name);
+  return allMessages.filter(m =>
+    m.recipient === name ||
+    m.sender === name ||
+    (m.direction === 'received' && (!m.sender || m.sender === 'General'))
+  );
 }
 
 function filterContacts(query) {
@@ -1639,17 +1761,18 @@ document.addEventListener('click', () => {
 socket.on('connect', () => addLog('WebSocket conectado', 'sys'));
 socket.on('disconnect', () => addLog('WebSocket desconectado', 'err'));
 
-socket.on('status_change', ({ connected, port }) => {
-  isConnected = connected;
-  updateStatusUI(connected, port);
+socket.on('status_change', ({ connected, port, role }) => {
+  if (role) {
+    connectionState[role] = { connected, port };
+    updateStatusUI(role, connected, port);
+  }
 });
 
 socket.on('history_load', (history) => {
   allMessages = history;
-  if (MODE === 'sender') {
-    renderContacts();
-    if (selectedContact) renderContactMessages();
-    updateEmptyState();
+  renderContacts();
+  if (selectedContact) {
+    renderContactMessages();
   } else {
     history.forEach(entry => renderMessage(entry, false));
   }
@@ -1659,12 +1782,13 @@ socket.on('history_load', (history) => {
 
 socket.on('new_message', (entry) => {
   allMessages.push(entry);
-  if (MODE === 'sender') {
-    renderContacts();
-    if (entry.recipient === selectedContact || (!entry.recipient && selectedContact === null)) {
-      renderMessage(entry, true);
-    }
-  } else {
+  renderContacts();
+  // Mostrar mensaje en el chat actual si corresponde al contacto seleccionado
+  // Los mensajes recibidos sin remitente específico se muestran en todos los chats
+  if (!selectedContact ||
+      entry.recipient === selectedContact ||
+      entry.sender === selectedContact ||
+      (entry.direction === 'received' && (!entry.sender || entry.sender === 'General'))) {
     renderMessage(entry, true);
   }
   appendHistoryItem(entry);
@@ -1672,8 +1796,7 @@ socket.on('new_message', (entry) => {
   if (currentView !== 'chat') {
     unreadCount++;
     const badge = document.getElementById('badge-chat');
-    badge.style.display = 'inline';
-    badge.textContent = unreadCount;
+    if (badge) { badge.style.display = 'inline'; badge.textContent = unreadCount; }
   }
 });
 
@@ -1695,65 +1818,80 @@ socket.on('char_received', ({ char, buffer }) => {
 
 // ── Connection ───────────────────────────────────────────────────────────────
 async function refreshPorts() {
-  const sel = document.getElementById('port-select');
   const res = await fetch('/api/ports');
   const ports = await res.json();
-  sel.innerHTML = '<option value="">-- Puerto --</option>';
-  if (ports.length === 0) {
-    sel.innerHTML += '<option disabled>Sin puertos detectados</option>';
-    showToast('No se encontraron puertos COM', 'error');
-  } else {
-    ports.forEach(p => {
-      sel.innerHTML += `<option value="${p.device}">${p.device} — ${p.desc}</option>`;
-    });
-    showToast(`${ports.length} puerto(s) encontrado(s)`, 'success');
+  for (const role of ['tx', 'rx']) {
+    const sel = document.getElementById(`port-select-${role}`);
+    sel.innerHTML = '<option value="">-- Puerto --</option>';
+    if (ports.length === 0) {
+      sel.innerHTML += '<option disabled>Sin puertos detectados</option>';
+    } else {
+      ports.forEach(p => {
+        sel.innerHTML += `<option value="${p.device}">${p.device} — ${p.desc}</option>`;
+      });
+    }
   }
+  const count = ports.length;
+  showToast(`${count} puerto(s) encontrado(s)`, count > 0 ? 'success' : 'error');
 }
 
-async function toggleConnect() {
-  if (isConnected) {
-    const res = await fetch('/api/disconnect', { method: 'POST' });
+async function toggleConnect(role) {
+  const targetState = connectionState[role];
+  if (targetState.connected) {
+    const res = await fetch('/api/disconnect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role })
+    });
     const data = await res.json();
-    if (data.ok) showToast('Desconectado', '');
+    if (data.ok) showToast(`${role.toUpperCase()} desconectado`, '');
   } else {
-    const port = document.getElementById('port-select').value;
-    if (!port) { showToast('Selecciona un puerto primero', 'error'); return; }
+    const port = document.getElementById(`port-select-${role}`).value;
+    if (!port) { showToast(`Selecciona un puerto ${role.toUpperCase()} primero`, 'error'); return; }
     const res = await fetch('/api/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ port })
+      body: JSON.stringify({ port, role })
     });
     const data = await res.json();
-    if (data.ok) showToast(`Conectado a ${data.port}`, 'success');
+    if (data.ok) showToast(`${role.toUpperCase()} conectado a ${data.port}`, 'success');
     else showToast('Error: ' + data.error, 'error');
   }
 }
 
-function updateStatusUI(connected, port) {
-  const dot       = document.getElementById('status-dot');
-  const txt       = document.getElementById('status-text');
-  const pillDot   = document.getElementById('conn-pill-dot');
-  const btn       = document.getElementById('btn-connect');
-  const sub       = document.getElementById('topbar-sub');
-  const sendBtn   = document.getElementById('btn-send');
+function updateStatusUI(role, connected, port) {
+  const pillDot = document.getElementById(`conn-pill-dot-${role}`);
+  const btn     = document.getElementById(`btn-connect-${role}`);
+  if (pillDot) pillDot.className = 'conn-dot' + (connected ? ' online' : '');
+  if (btn) {
+    btn.className = 'btn-conn ' + (connected ? 'off' : 'on');
+    btn.textContent = connected ? 'X' : 'C';
+    btn.title = connected ? `Desconectar ${role.toUpperCase()}` : `Conectar ${role.toUpperCase()}`;
+  }
 
-  if (connected) {
-    dot.className    = 'status-dot online';
-    pillDot.className = 'conn-pill-dot online';
-    txt.textContent  = port;
-    btn.className    = 'btn-connect-pill disconnect';
-    btn.textContent  = 'Desconectar';
-    sub.textContent  = `Conectado a ${port} · LiFi activo`;
-    if (sendBtn) sendBtn.disabled = false;
-    addLog(`Conectado a ${port}`, 'sys');
+  const sub = document.getElementById('topbar-sub');
+  const statusDot = document.getElementById('status-dot');
+  const statusTxt = document.getElementById('status-text');
+  const txState = connectionState.tx;
+  const rxState = connectionState.rx;
+
+  if (txState.connected || rxState.connected) {
+    const parts = [];
+    if (txState.connected) parts.push(`TX:${txState.port}`);
+    if (rxState.connected) parts.push(`RX:${rxState.port}`);
+    if (statusTxt) statusTxt.textContent = parts.join(' ');
+    if (statusDot) statusDot.className = 'status-dot online';
+    if (sub) sub.textContent = `TX:${txState.port || '—'} RX:${rxState.port || '—'} · LiFi ${txState.connected ? 'TX' : ''}${txState.connected && rxState.connected ? '+' : ''}${rxState.connected ? 'RX' : ''}`;
+    if (connected) addLog(`${role.toUpperCase()} conectado a ${port}`, 'sys');
   } else {
-    dot.className    = 'status-dot offline';
-    pillDot.className = 'conn-pill-dot';
-    txt.textContent  = 'Sin conexión';
-    btn.className    = 'btn-connect-pill connect';
-    btn.textContent  = 'Conectar';
-    sub.textContent  = 'Sin conexión serial';
-    if (sendBtn) sendBtn.disabled = true;
+    if (statusTxt) statusTxt.textContent = 'Sin conexión';
+    if (statusDot) statusDot.className = 'status-dot offline';
+    if (sub) sub.textContent = 'Sin conexión serial';
+  }
+
+  const sendBtn = document.getElementById('btn-send');
+  if (sendBtn) sendBtn.disabled = !connectionState.tx.connected;
+  if (!anyConnected()) {
     document.getElementById('buffer-bar').classList.remove('show');
     document.getElementById('typing-indicator').classList.remove('show');
   }
@@ -1764,14 +1902,15 @@ async function sendMessage() {
   const input = document.getElementById('msg-input');
   const msg = input.value.trim();
   if (!msg) return;
-  if (!isConnected) { showToast('Conecta un puerto primero', 'error'); return; }
-  if (MODE === 'sender' && !selectedContact) { showToast('Selecciona un contacto primero', 'error'); return; }
+  if (!anyConnected()) { showToast('Conecta un puerto primero', 'error'); return; }
+  if (!connectionState.tx.connected) { showToast('Conecta un puerto TX primero', 'error'); return; }
+  if (!selectedContact) { showToast('Selecciona un contacto primero', 'error'); return; }
   input.value = '';
   autoResize(input);
   const res = await fetch('/api/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: msg, recipient: selectedContact || 'General' })
+    body: JSON.stringify({ message: msg, recipient: selectedContact })
   });
   const data = await res.json();
   if (!data.ok) showToast('Error: ' + data.error, 'error');
@@ -1802,13 +1941,17 @@ function renderMessage(entry, animate) {
   const row = document.createElement('div');
   row.className = `msg-row ${entry.direction}`;
   row.dataset.id = entry.id;
-  let recipientHtml = '';
-  if (MODE === 'sender' && entry.direction === 'sent' && entry.recipient && entry.recipient !== selectedContact) {
-    recipientHtml = `<div class="msg-contact-label">Para ${escHtml(entry.recipient)}</div>`;
+  let labelHtml = '';
+  if (selectedContact) {
+    if (entry.direction === 'sent' && entry.recipient && entry.recipient !== selectedContact) {
+      labelHtml = `<div class="msg-contact-label">Para ${escHtml(entry.recipient)}</div>`;
+    } else if (entry.direction === 'received' && entry.sender && entry.sender !== selectedContact) {
+      labelHtml = `<div class="msg-contact-label">De ${escHtml(entry.sender)}</div>`;
+    }
   }
   row.innerHTML = `
-    ${recipientHtml}
-    <div class="msg-bubble">${escHtml(entry.text)}</div>
+    ${labelHtml}
+    <div class="msg-bubble">${emojify(escHtml(entry.text))}</div>
     <div class="msg-meta">
       <span class="msg-label ${entry.direction}">${entry.direction === 'sent' ? 'Enviado' : 'Recibido'}</span>
       ${entry.timestamp}
@@ -1823,19 +1966,16 @@ function updateEmptyState() {
   const hasMessages = area.querySelectorAll('.msg-row').length > 0;
   if (hasMessages) {
     empty.style.display = 'none';
+  } else if (!selectedContact) {
+    empty.style.display = 'flex';
+    empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>Selecciona un contacto</p>
+      <p style="font-size:12px">Elige una persona de la lista para chatear</p>`;
   } else {
     empty.style.display = 'flex';
-    if (MODE === 'sender') {
-      if (!selectedContact) {
-        empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <p>Selecciona un contacto</p>
-          <p style="font-size:12px">Elige una persona de la lista para chatear</p>`;
-      } else {
-        empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <p>No hay mensajes con ${escHtml(selectedContact)}</p>
-          <p style="font-size:12px">Escribe un mensaje y presiona Enviar</p>`;
-      }
-    }
+    empty.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>No hay mensajes con ${escHtml(selectedContact)}</p>
+      <p style="font-size:12px">Escribe un mensaje y presiona Enviar</p>`;
   }
 }
 
@@ -1860,8 +2000,8 @@ function renderHistoryList(history) {
       const item = document.createElement('div');
       item.className = 'history-item';
       const who = e.direction === 'sent'
-        ? (e.recipient ? 'Aldo → ' + e.recipient : 'Tú (Emisor)')
-        : 'Receptor LiFi';
+        ? (e.recipient ? LOCAL_USER + ' → ' + e.recipient : LOCAL_USER)
+        : (e.sender ? e.sender + ' → ' + LOCAL_USER : 'Recibido');
       item.innerHTML = `
         <div class="history-avatar ${e.direction}">${e.direction === 'sent' ? 'TX' : 'RX'}</div>
         <div class="history-body">
@@ -1869,7 +2009,7 @@ function renderHistoryList(history) {
             <span class="history-who">${who}</span>
             <span class="history-time">${e.timestamp}</span>
           </div>
-          <div class="history-text">${escHtml(e.text)}</div>
+          <div class="history-text">${emojify(escHtml(e.text))}</div>
         </div>`;
       group.appendChild(item);
     });
@@ -1892,8 +2032,8 @@ function appendHistoryItem(entry) {
   const item = document.createElement('div');
   item.className = 'history-item';
   const who = entry.direction === 'sent'
-    ? (entry.recipient ? 'Aldo → ' + entry.recipient : 'Tú (Emisor)')
-    : 'Receptor LiFi';
+    ? (entry.recipient ? LOCAL_USER + ' → ' + entry.recipient : LOCAL_USER)
+    : (entry.sender ? entry.sender + ' → ' + LOCAL_USER : 'Recibido');
   item.innerHTML = `
     <div class="history-avatar ${entry.direction}">${entry.direction === 'sent' ? 'TX' : 'RX'}</div>
     <div class="history-body">
@@ -1901,7 +2041,7 @@ function appendHistoryItem(entry) {
         <span class="history-who">${who}</span>
         <span class="history-time">${entry.timestamp}</span>
       </div>
-      <div class="history-text">${escHtml(entry.text)}</div>
+      <div class="history-text">${emojify(escHtml(entry.text))}</div>
     </div>`;
   group.appendChild(item);
 }
@@ -1914,7 +2054,7 @@ async function clearHistory() {
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('history-empty').style.display = 'flex';
   updateEmptyState();
-  if (MODE === 'sender') renderContacts();
+  renderContacts();
   showToast('Historial limpiado', '');
 }
 
@@ -1950,18 +2090,16 @@ function switchView(view) {
   const titles = { chat: 'Chat LiFi', history: 'Historial de mensajes', log: 'Log del Arduino' };
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) {
-    if (MODE === 'sender' && view === 'chat' && selectedContact) {
+    if (view === 'chat' && selectedContact) {
       titleEl.textContent = 'Chat con ' + selectedContact;
     } else {
       titleEl.textContent = titles[view];
     }
   }
-  // In sender mode, hide chat contact header when not in chat view
-  if (MODE === 'sender') {
-    const header = document.getElementById('chatContactHeader');
-    if (header) {
-      header.classList.toggle('show', view === 'chat' && !!selectedContact);
-    }
+  // Show/hide chat contact header based on view
+  const header = document.getElementById('chatContactHeader');
+  if (header) {
+    header.classList.toggle('show', view === 'chat' && !!selectedContact);
   }
 }
 
@@ -1969,6 +2107,57 @@ function switchView(view) {
 function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
+
+// ── Emoji system ──────────────────────────────────────────────────────────────
+const EMOJI_MAP = {
+  ':r1':  '😀',  ':r2':  '😂',  ':r3':  '❤️',  ':r4':  '👍',  ':r5':  '😎',
+  ':r6':  '🔥',  ':r7':  '🎉',  ':r8':  '💀',  ':r9':  '🙌',  ':r10': '👀',
+  ':r11': '🚀', ':r12': '💯', ':r13': '😢', ':r14': '😡', ':r15': '😍',
+  ':r16': '🤔', ':r17': '🙏', ':r18': '💪', ':r19': '✨', ':r20': '🎶'
+};
+
+function emojify(text) {
+  return text.replace(/:r\d+/g, m => EMOJI_MAP[m] || m);
+}
+
+function buildEmojiPicker() {
+  const container = document.getElementById('emojiPicker');
+  const grid = document.createElement('div');
+  grid.className = 'emoji-grid';
+  for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+    const btn = document.createElement('button');
+    btn.className = 'emoji-grid-item';
+    btn.type = 'button';
+    btn.innerHTML = `${emoji}<span class="emoji-code">${code}</span>`;
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      insertEmoji(code);
+    };
+    grid.appendChild(btn);
+  }
+  container.appendChild(grid);
+}
+
+function toggleEmojiPicker(e) {
+  e.stopPropagation();
+  document.getElementById('emojiPicker').classList.toggle('open');
+}
+
+function insertEmoji(code) {
+  const input = document.getElementById('msg-input');
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  input.value = input.value.substring(0, start) + code + input.value.substring(end);
+  input.selectionStart = input.selectionEnd = start + code.length;
+  input.focus();
+  autoResize(input);
+  document.getElementById('emojiPicker').classList.remove('open');
+}
+
+document.addEventListener('click', () => {
+  document.getElementById('emojiPicker').classList.remove('open');
+});
+// ── End Emoji system ──────────────────────────────────────────────────────────
 
 function formatDate(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -2014,26 +2203,25 @@ function restoreCustomBg() {
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 buildSwatches();
+buildEmojiPicker();
 restorePalette();
 restoreCustomBg();
 refreshPorts();
 
-// Load Aldo avatar
-if (MODE === 'sender') {
-  const aldoImg = document.getElementById('aldoAvatarImg');
-  if (aldoImg) {
-    aldoImg.onload = function () { this.style.display = 'block'; document.getElementById('aldoAvatarInitial').style.display = 'none'; };
-    aldoImg.onerror = function () { this.style.display = 'none'; document.getElementById('aldoAvatarInitial').style.display = 'flex'; };
-    aldoImg.src = '/static/contacts/aldo.jpg';
-  }
-  renderContacts();
-  switchView('chat');
-  // Auto-select first contact
-  if (CONTACTS.length > 0) {
-    selectContact(CONTACTS[0].name);
-  }
-} else {
-  switchView('chat');
+// Load local user avatar
+const aldoImg = document.getElementById('aldoAvatarImg');
+if (aldoImg) {
+  const localName = LOCAL_USER.toLowerCase();
+  aldoImg.onload = function () { this.style.display = 'block'; document.getElementById('aldoAvatarInitial').style.display = 'none'; };
+  aldoImg.onerror = function () { this.style.display = 'none'; document.getElementById('aldoAvatarInitial').style.display = 'flex'; };
+  aldoImg.src = '/static/contacts/' + localName + '.jpg';
+  document.getElementById('aldoAvatar').title = LOCAL_USER;
+}
+renderContacts();
+switchView('chat');
+// Auto-select first contact
+if (CONTACTS.length > 0) {
+  selectContact(CONTACTS[0].name);
 }
 </script>
 </body>
