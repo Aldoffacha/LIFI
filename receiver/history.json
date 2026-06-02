@@ -440,5 +440,53 @@
     "sender": "Carla",
     "timestamp": "20:00:33",
     "date": "2026-05-31"
+  },
+  {
+    "id": 1,
+    "text": "hola bro",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:29:00",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 2,
+    "text": "que haces",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:31:10",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 1,
+    "text": "hola papa",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:33:50",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 2,
+    "text": "xd",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:34:13",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 3,
+    "text": "JAJAJA",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:36:16",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 1,
+    "text": "xd",
+    "direction": "received",
+    "sender": "Aldo",
+    "timestamp": "14:36:38",
+    "date": "2026-06-02"
   }
 ]

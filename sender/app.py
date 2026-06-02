@@ -22,8 +22,14 @@ state = {
     'tx':  { 'port': None, 'serial': None, 'connected': False },
     'rx':  { 'port': None, 'serial': None, 'connected': False },
     'history': [],
-    'last_recv_time': 0
+    'last_recv_time': 0,
+    'next_id': 1
 }
+
+def next_id():
+    nid = state['next_id']
+    state['next_id'] += 1
+    return nid
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
 
@@ -58,7 +64,7 @@ def read_rx_loop():
                                 continue
                             state['last_recv_time'] = now
                             entry = {
-                                'id': len(state['history']) + 1,
+                                'id': next_id(),
                                 'text': line,
                                 'direction': 'received',
                                 'sender': 'General',
@@ -133,7 +139,7 @@ def send_message():
     try:
         tx['serial'].write((msg + '\n').encode(ENCODING))
         entry = {
-            'id': len(state['history']) + 1,
+            'id': next_id(),
             'text': msg,
             'direction': 'sent',
             'recipient': recipient,

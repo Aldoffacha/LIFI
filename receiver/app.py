@@ -25,7 +25,13 @@ state = {
     'history': [],
     'char_buffer': '',
     'last_char_time': 0,
+    'next_id': 1
 }
+
+def next_id():
+    nid = state['next_id']
+    state['next_id'] += 1
+    return nid
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
 
@@ -63,7 +69,7 @@ def save_and_emit_message():
     if not msg_text:
         return
     entry = {
-        'id': len(state['history']) + 1,
+        'id': next_id(),
         'text': msg_text,
         'direction': 'received',
         'sender': 'General',
@@ -170,6 +176,26 @@ def disconnect_port():
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)})
 
+def simulate_reception(msg, sender_name):
+    buffer = ''
+    for ch in msg:
+        eventlet.sleep(0.25)
+        buffer += ch
+        socketio.emit('char_received', {'char': ch, 'buffer': buffer})
+    eventlet.sleep(0.5)
+    entry = {
+        'id': next_id(),
+        'text': msg,
+        'direction': 'received',
+        'sender': sender_name,
+        'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+        'date': datetime.datetime.now().strftime('%Y-%m-%d')
+    }
+    state['history'].append(entry)
+    save_history()
+    socketio.emit('new_message', entry)
+    socketio.emit('arduino_log', {'msg': f'[RX] Mensaje recibido: {msg}'})
+
 @app.route('/api/send', methods=['POST'])
 def send_message():
     data = request.json
@@ -177,26 +203,11 @@ def send_message():
     recipient = data.get('recipient', 'General')
     if not msg:
         return jsonify({'ok': False, 'error': 'Mensaje vacío'})
-    tx = state['tx']
-    if not tx['connected'] or not tx['serial']:
-        return jsonify({'ok': False, 'error': 'Puerto TX no conectado'})
-    try:
-        tx['serial'].write((msg + '\n').encode(ENCODING))
-        entry = {
-            'id': len(state['history']) + 1,
-            'text': msg,
-            'direction': 'sent',
-            'recipient': recipient,
-            'sender': 'Carla',
-            'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-            'date': datetime.datetime.now().strftime('%Y-%m-%d')
-        }
-        state['history'].append(entry)
-        save_history()
-        socketio.emit('new_message', entry)
-        return jsonify({'ok': True, 'entry': entry})
-    except Exception as e:
-        return jsonify({'ok': False, 'error': str(e)})
+    rx = state['rx']
+    if not rx['connected'] or not rx['serial']:
+        return jsonify({'ok': False, 'error': 'Puerto RX no conectado'})
+    eventlet.spawn(simulate_reception, msg, recipient)
+    return jsonify({'ok': True})
 
 @app.route('/api/history')
 def get_history():

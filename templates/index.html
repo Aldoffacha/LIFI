@@ -822,6 +822,10 @@
     line-height: 1.5;
   }
   #msg-input::placeholder { color: var(--muted); }
+  #msg-input.receiver-mode {
+    color: transparent !important;
+    caret-color: transparent !important;
+  }
 
   /* ── Emoji picker ── */
   .btn-emoji {
@@ -1169,8 +1173,8 @@
     <!-- Input area (both modes) -->
     <div class="input-area">
       <div class="input-wrap">
-        <textarea id="msg-input" placeholder="Escribe un mensaje LiFi..." rows="1"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <textarea id="msg-input" placeholder="{% if mode == 'receiver' %}Recibiendo señal...{% else %}Escribe un mensaje LiFi...{% endif %}" rows="1"
+          onkeydown="handleKey(event)" oninput="onInputChange(this)" {% if mode == 'receiver' %}class="receiver-mode"{% endif %}></textarea>
       </div>
       <div style="position:relative;">
         <button class="btn-emoji" id="btn-emoji" onclick="toggleEmojiPicker(event)" title="Emojis" type="button">
@@ -1907,7 +1911,13 @@ function updateStatusUI(role, connected, port) {
   }
 
   const sendBtn = document.getElementById('btn-send');
-  if (sendBtn) sendBtn.disabled = !connectionState.tx.connected;
+  if (sendBtn) {
+    if (MODE === 'receiver') {
+      sendBtn.disabled = !connectionState.rx.connected;
+    } else {
+      sendBtn.disabled = !connectionState.tx.connected;
+    }
+  }
   if (!anyConnected()) {
     document.getElementById('buffer-bar').classList.remove('show');
     document.getElementById('typing-indicator').classList.remove('show');
@@ -1920,7 +1930,8 @@ async function sendMessage() {
   const msg = input.value.trim();
   if (!msg) return;
   if (!anyConnected()) { showToast('Conecta un puerto primero', 'error'); return; }
-  if (!connectionState.tx.connected) { showToast('Conecta un puerto TX primero', 'error'); return; }
+  if (MODE === 'sender' && !connectionState.tx.connected) { showToast('Conecta un puerto TX primero', 'error'); return; }
+  if (MODE === 'receiver' && !connectionState.rx.connected) { showToast('Conecta un puerto RX primero', 'error'); return; }
   if (!selectedContact) { showToast('Selecciona un contacto primero', 'error'); return; }
   input.value = '';
   autoResize(input);
@@ -1943,6 +1954,10 @@ function handleKey(e) {
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function onInputChange(el) {
+  autoResize(el);
 }
 
 async function flushBuffer() {
