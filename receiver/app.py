@@ -204,11 +204,31 @@ def send_message():
     recipient = data.get('recipient', 'General')
     if not msg:
         return jsonify({'ok': False, 'error': 'Mensaje vacío'})
+    tx = state['tx']
     rx = state['rx']
-    if not rx['connected'] or not rx['serial']:
-        return jsonify({'ok': False, 'error': 'Puerto RX no conectado'})
-    eventlet.spawn(simulate_reception, msg, recipient)
-    return jsonify({'ok': True})
+    if tx['connected'] and tx['serial']:
+        try:
+            tx['serial'].write((msg + '\n').encode(ENCODING))
+            entry = {
+                'id': next_id(),
+                'text': msg,
+                'direction': 'sent',
+                'recipient': recipient,
+                'sender': 'Carla',
+                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                'date': datetime.datetime.now().strftime('%Y-%m-%d')
+            }
+            state['history'].append(entry)
+            save_history()
+            socketio.emit('new_message', entry)
+            return jsonify({'ok': True, 'entry': entry})
+        except Exception as e:
+            return jsonify({'ok': False, 'error': str(e)})
+    elif rx['connected'] and rx['serial']:
+        eventlet.spawn(simulate_reception, msg, recipient)
+        return jsonify({'ok': True})
+    else:
+        return jsonify({'ok': False, 'error': 'Conecta un puerto TX o RX primero'})
 
 @app.route('/api/history')
 def get_history():

@@ -796,5 +796,149 @@
     "sender": "Aldo",
     "timestamp": "14:20:19",
     "date": "2026-06-09"
+  },
+  {
+    "id": 3,
+    "text": "hola bro",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:28:28",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 4,
+    "text": "hola bro",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:28:52",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 5,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:30:22",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 6,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:32:09",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 7,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:32:21",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 8,
+    "text": "que paso",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:32:28",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 9,
+    "text": "xdddd",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:32:54",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 10,
+    "text": ",m,",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:33:16",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 11,
+    "text": "po",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:33:20",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 12,
+    "text": "1234567890",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:33:26",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 13,
+    "text": "lol",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:33:50",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 14,
+    "text": "loool",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:33:54",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 15,
+    "text": "1234567890",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:34:00",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 16,
+    "text": "1234567890",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:34:41",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 17,
+    "text": "que paso",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:35:07",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 18,
+    "text": "looool",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:35:24",
+    "date": "2026-06-09"
   }
 ]

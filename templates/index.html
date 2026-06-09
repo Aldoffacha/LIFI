@@ -1913,7 +1913,7 @@ function updateStatusUI(role, connected, port) {
   const sendBtn = document.getElementById('btn-send');
   if (sendBtn) {
     if (MODE === 'receiver') {
-      sendBtn.disabled = !connectionState.rx.connected;
+      sendBtn.disabled = !connectionState.tx.connected && !connectionState.rx.connected;
     } else {
       sendBtn.disabled = !connectionState.tx.connected;
     }
@@ -1931,7 +1931,7 @@ async function sendMessage() {
   if (!msg) return;
   if (!anyConnected()) { showToast('Conecta un puerto primero', 'error'); return; }
   if (MODE === 'sender' && !connectionState.tx.connected) { showToast('Conecta un puerto TX primero', 'error'); return; }
-  if (MODE === 'receiver' && !connectionState.rx.connected) { showToast('Conecta un puerto RX primero', 'error'); return; }
+  if (MODE === 'receiver' && !connectionState.tx.connected && !connectionState.rx.connected) { showToast('Conecta un puerto TX o RX primero', 'error'); return; }
   if (!selectedContact) { showToast('Selecciona un contacto primero', 'error'); return; }
   input.value = '';
   autoResize(input);
