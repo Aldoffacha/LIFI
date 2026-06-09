@@ -544,5 +544,257 @@
     "sender": "Aldo",
     "timestamp": "14:36:40",
     "date": "2026-06-02"
+  },
+  {
+    "id": 1,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:55:05",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 2,
+    "text": "hola como estas",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:56:03",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 3,
+    "text": ":r2",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:56:56",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 4,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:57:18",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 5,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:58:26",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 6,
+    "text": ":r15",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:58:46",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 7,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:00:00",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 8,
+    "text": ":)",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:03:57",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 9,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:04:30",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 10,
+    "text": "hola ingeniero",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:14:36",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 11,
+    "text": "como esta",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:14:58",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 12,
+    "text": "estoy en la feria",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:15:23",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 13,
+    "text": "tengo una billetera",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:15:51",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 14,
+    "text": ":r17",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:19:10",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 15,
+    "text": "mami no me digas que no",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:28:26",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 16,
+    "text": "buenas noches",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:29:59",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 17,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:42:07",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 18,
+    "text": ":r8",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:42:24",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 19,
+    "text": "hola como estas",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:42:39",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 20,
+    "text": "hola inge",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:43:12",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 21,
+    "text": ":r3",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:43:30",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 22,
+    "text": "que dia nos reunimos",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:43:47",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 23,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:52:31",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 24,
+    "text": "hola",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:52:36",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 25,
+    "text": "La materia de microcontroladores y microprocesadores tuvo 5 participantes aprobados de 9",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:55:26",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 26,
+    "text": ":r3 A SANTIAGO LE GUSTA LEYDY :r3",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "15:58:01",
+    "date": "2026-06-02"
+  },
+  {
+    "id": 1,
+    "text": "hola bro",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:20:00",
+    "date": "2026-06-09"
+  },
+  {
+    "id": 2,
+    "text": "hola bro",
+    "direction": "sent",
+    "recipient": "Carla",
+    "sender": "Aldo",
+    "timestamp": "14:20:19",
+    "date": "2026-06-09"
   }
 ]

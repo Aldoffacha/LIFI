@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = 'lifi-receiver-secret'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-BUFFER_TIMEOUT = 1.5
+BUFFER_TIMEOUT = 2.0
 
 SYS_PATTERNS = ['[CAL]', '[SYS]', 'Conectado', 'Esperando', 'desconect',
                 'inicializando', 'listo', 'Receptor', 'Emisor', 'Puerto', 'Baudrate']
@@ -51,15 +51,16 @@ def parse_arduino_line(line):
     if '→' in line and 'Bits:' in line:
         partes = line.split('→')
         if len(partes) == 2:
+            bit_part = partes[0].replace('Bits:', '').strip()
             char = partes[1].strip()
-            if char == '\\n' or char == '(nueva línea)' or char == '(newline)':
+            if char in ('\\n', '(nueva línea)', '(newline)'):
                 return '\n'
+            if bit_part == '00100000' or char in ('(espacio)', '(space)'):
+                return ' '
             if char and char != '(carácter no imprimible)':
                 return char
-            if not char:
-                bits_part = partes[0].replace('Bits:', '').strip()
-                if bits_part == '00001010':
-                    return '\n'
+            if not char and bit_part == '00001010':
+                return '\n'
     return None
 
 def save_and_emit_message():
@@ -119,7 +120,7 @@ def read_rx_loop():
                                 'buffer': state['char_buffer']
                             })
                     elif not is_system_line(raw):
-                        socketio.emit('char_received', {'char': '', 'buffer': raw})
+                        socketio.emit('arduino_log', {'msg': f'[RX sin parsear]: {raw}'})
 
             eventlet.sleep(0.02)
 

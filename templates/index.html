@@ -822,10 +822,7 @@
     line-height: 1.5;
   }
   #msg-input::placeholder { color: var(--muted); }
-  #msg-input.receiver-mode {
-    color: transparent !important;
-    caret-color: transparent !important;
-  }
+
 
   /* ── Emoji picker ── */
   .btn-emoji {
@@ -1174,7 +1171,7 @@
     <div class="input-area">
       <div class="input-wrap">
         <textarea id="msg-input" placeholder="{% if mode == 'receiver' %}Recibiendo señal...{% else %}Escribe un mensaje LiFi...{% endif %}" rows="1"
-          onkeydown="handleKey(event)" oninput="onInputChange(this)" {% if mode == 'receiver' %}class="receiver-mode"{% endif %}></textarea>
+          onkeydown="handleKey(event)" oninput="onInputChange(this)"></textarea>
       </div>
       <div style="position:relative;">
         <button class="btn-emoji" id="btn-emoji" onclick="toggleEmojiPicker(event)" title="Emojis" type="button">
@@ -1797,6 +1794,9 @@ socket.on('new_message', (entry) => {
   }
   appendHistoryItem(entry);
   updateEmptyState();
+  // Ocultar barra de buffer e indicador de escritura al recibir mensaje completo
+  document.getElementById('buffer-bar').classList.remove('show');
+  document.getElementById('typing-indicator').classList.remove('show');
   if (currentView !== 'chat') {
     unreadCount++;
     const badge = document.getElementById('badge-chat');
