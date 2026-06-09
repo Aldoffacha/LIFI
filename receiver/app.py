@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = 'lifi-receiver-secret'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-BUFFER_TIMEOUT = 2.0
+BUFFER_TIMEOUT = 1.5
 
 SYS_PATTERNS = ['[CAL]', '[SYS]', 'Conectado', 'Esperando', 'desconect',
                 'inicializando', 'listo', 'Receptor', 'Emisor', 'Puerto', 'Baudrate']
@@ -51,16 +51,15 @@ def parse_arduino_line(line):
     if '→' in line and 'Bits:' in line:
         partes = line.split('→')
         if len(partes) == 2:
-            bit_part = partes[0].replace('Bits:', '').strip()
             char = partes[1].strip()
-            if char in ('\\n', '(nueva línea)', '(newline)'):
+            if char == '\\n' or char == '(nueva línea)' or char == '(newline)':
                 return '\n'
-            if bit_part == '00100000' or char in ('(espacio)', '(space)'):
-                return ' '
             if char and char != '(carácter no imprimible)':
                 return char
-            if not char and bit_part == '00001010':
-                return '\n'
+            if not char:
+                bits_part = partes[0].replace('Bits:', '').strip()
+                if bits_part == '00001010':
+                    return '\n'
     return None
 
 def save_and_emit_message():
@@ -120,7 +119,7 @@ def read_rx_loop():
                                 'buffer': state['char_buffer']
                             })
                     elif not is_system_line(raw):
-                        socketio.emit('arduino_log', {'msg': f'[RX sin parsear]: {raw}'})
+                        socketio.emit('char_received', {'char': '', 'buffer': raw})
 
             eventlet.sleep(0.02)
 
@@ -204,31 +203,11 @@ def send_message():
     recipient = data.get('recipient', 'General')
     if not msg:
         return jsonify({'ok': False, 'error': 'Mensaje vacío'})
-    tx = state['tx']
     rx = state['rx']
-    if tx['connected'] and tx['serial']:
-        try:
-            tx['serial'].write((msg + '\n').encode(ENCODING))
-            entry = {
-                'id': next_id(),
-                'text': msg,
-                'direction': 'sent',
-                'recipient': recipient,
-                'sender': 'Carla',
-                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                'date': datetime.datetime.now().strftime('%Y-%m-%d')
-            }
-            state['history'].append(entry)
-            save_history()
-            socketio.emit('new_message', entry)
-            return jsonify({'ok': True, 'entry': entry})
-        except Exception as e:
-            return jsonify({'ok': False, 'error': str(e)})
-    elif rx['connected'] and rx['serial']:
-        eventlet.spawn(simulate_reception, msg, recipient)
-        return jsonify({'ok': True})
-    else:
-        return jsonify({'ok': False, 'error': 'Conecta un puerto TX o RX primero'})
+    if not rx['connected'] or not rx['serial']:
+        return jsonify({'ok': False, 'error': 'Puerto RX no conectado'})
+    eventlet.spawn(simulate_reception, msg, recipient)
+    return jsonify({'ok': True})
 
 @app.route('/api/history')
 def get_history():
